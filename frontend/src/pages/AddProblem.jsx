@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Plus,
@@ -38,7 +38,10 @@ const TOPIC_OPTIONS = [
 
 const AddProblem = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEdit = Boolean(id);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEdit);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,6 +53,34 @@ const AddProblem = () => {
     tags: "",
     notes: "",
   });
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProblem = async () => {
+      try {
+        const res = await axiosInstance.get(`/problems/${id}`);
+        if (res.data?.success && res.data.problem) {
+          const p = res.data.problem;
+          setFormData({
+            name: p.name || "",
+            difficulty: p.difficulty || "Easy",
+            topic: p.topic || "",
+            source: p.source || "",
+            problemLink: p.problemLink || "",
+            githubLink: p.githubLink || "",
+            tags: Array.isArray(p.tags) ? p.tags.join(", ") : "",
+            notes: p.notes || "",
+          });
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to load problem");
+        navigate("/myProblems");
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchProblem();
+  }, [id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,25 +117,46 @@ const AddProblem = () => {
     setLoading(true);
 
     try {
-      await axiosInstance.post("/problems/add", {
-        name,
-        difficulty,
-        topic,
-        source,
-        problemLink,
-        githubLink: githubLink || undefined,
-        tags: tagsArray,
-        notes: notes || undefined,
-      });
-
-      toast.success("Problem added successfully!");
-      navigate(-1);
+      if (isEdit) {
+        await axiosInstance.patch(`/problems/${id}`, {
+          name,
+          difficulty,
+          topic,
+          source,
+          problemLink,
+          githubLink: githubLink || undefined,
+          tags: tagsArray,
+          notes: notes || undefined,
+        });
+        toast.success("Problem updated successfully!");
+      } else {
+        await axiosInstance.post("/problems/add", {
+          name,
+          difficulty,
+          topic,
+          source,
+          problemLink,
+          githubLink: githubLink || undefined,
+          tags: tagsArray,
+          notes: notes || undefined,
+        });
+        toast.success("Problem added successfully!");
+      }
+      navigate("/myProblems");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add problem");
     } finally {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return (
+      <div className="min-h-screen bg-black p-6 flex items-center justify-center">
+        <Loader className="w-10 h-10 animate-spin text-purple-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black p-6">
@@ -117,7 +169,7 @@ const AddProblem = () => {
 
       <div className="max-w-3xl mx-auto bg-white rounded-xl p-8">
         <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <BookOpen /> Add Problem
+          <BookOpen /> {isEdit ? "Edit Problem" : "Add Problem"}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -218,7 +270,7 @@ const AddProblem = () => {
             className="w-full bg-purple-600 text-white py-3 rounded-lg flex items-center justify-center gap-2"
           >
             {loading ? <Loader className="animate-spin" /> : <Plus />}
-            Add Problem
+            {isEdit ? "Update Problem" : "Add Problem"}
           </button>
         </form>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { axiosInstance } from "../lib/axios";
 import {
   Eye,
@@ -190,6 +190,13 @@ const MyProblems = () => {
                   </td>
                   <td className="p-3">
                     <div className="flex justify-center gap-2">
+                      <Link
+                        to={`/problems/edit/${p._id}`}
+                        className="p-2 bg-blue-600/20 rounded hover:bg-blue-600/30"
+                        title="Edit problem"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
                       <button
                         onClick={() =>
                           setExpandedProblem(expandedProblem === p._id ? null : p._id)

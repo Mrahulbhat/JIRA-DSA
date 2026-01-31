@@ -117,14 +117,14 @@ const AppContent = () => {
               }
             />
 
-            {/* <Route
+            <Route
               path="/problems/edit/:id"
               element={
                 <ProtectedRoute>
-                  <EditProblem />
+                  <AddProblem />
                 </ProtectedRoute>
               }
-            /> */}
+            />
           </Routes>
 
           <Toaster />
