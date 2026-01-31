@@ -33,7 +33,7 @@ export class DashboardPage extends BasePage {
     this.page = page;
 
     // Header
-    this.title = page.getByTestId('dashboard-root').locator('h1');
+    this.title = page.getByTestId('header-title');
 
     // Cards
     this.currentStreak = page.getByTestId('current-streak');

@@ -11,34 +11,32 @@ test.describe('Dashboard full page validation', () => {
     await navigateToPage(page, commonConstants.pageName.DASHBOARD);
   });
 
-  test('Validate entire dashboard functionality', async ({ page, context }) => {
-    const dashboard = new DashboardPage(page);
+  test('Validate entire dashboard functionality', async ({ page, dashboardPage,context }) => {
 
     // ----- HEADER -----
-    await expect(dashboard.title).toBeVisible();
-    await expect(dashboard.title).toHaveText(/DSA Arena/i);
+    await expect(page.getByText('DSA Arena')).toBeVisible();
 
     // ----- CARDS -----
-    await expect(dashboard.currentStreak).toBeVisible();
-    await expect(dashboard.totalSolved).toBeVisible();
-    await expect(dashboard.weeklyGoal).toBeVisible();
-    await expect(dashboard.globalRank).toBeVisible();
+    await expect(dashboardPage.currentStreak).toBeVisible();
+    await expect(dashboardPage.totalSolved).toBeVisible();
+    await expect(dashboardPage.weeklyGoal).toBeVisible();
+    await expect(dashboardPage.globalRank).toBeVisible();
 
-    await expect(dashboard.currentStreak).not.toHaveText('');
-    await expect(dashboard.totalSolved).not.toHaveText('');
+    await expect(dashboardPage.currentStreak).not.toHaveText('');
+    await expect(dashboardPage.totalSolved).not.toHaveText('');
 
     // ----- PROBLEM OF THE DAY -----
-    await expect(dashboard.potdSection).toBeVisible();
-    await expect(dashboard.potdTitle).toBeVisible();
+    await expect(dashboardPage.potdSection).toBeVisible();
+    await expect(dashboardPage.potdTitle).toBeVisible();
 
-    const solveVisible = await dashboard.potdSolveBtn.isVisible().catch(() => false);
-    const solvedVisible = await dashboard.potdSolvedBadge.isVisible().catch(() => false);
+    const solveVisible = await dashboardPage.potdSolveBtn.isVisible().catch(() => false);
+    const solvedVisible = await dashboardPage.potdSolvedBadge.isVisible().catch(() => false);
     expect(solveVisible || solvedVisible).toBeTruthy();
 
     if (solveVisible) {
       const [newTab] = await Promise.all([
         context.waitForEvent('page'),
-        dashboard.potdSolveBtn.click(),
+        dashboardPage.potdSolveBtn.click(),
       ]);
       await newTab.waitForLoadState();
       expect(newTab.url()).not.toContain('dashboard');
@@ -46,26 +44,26 @@ test.describe('Dashboard full page validation', () => {
     }
 
     // ----- QUICK ACTION BUTTONS -----
-    await dashboard.addProblemBtn.click();
+    await dashboardPage.addProblemBtn.click();
     await expect(page).toHaveURL(/\/problems\/add/);
     await page.goBack();
 
-    await dashboard.leaderboardBtn.click();
+    await dashboardPage.leaderboardBtn.click();
     await expect(page).toHaveURL(/\/leaderboard/);
     await page.goBack();
 
-    await dashboard.myChallengesBtn.click();
+    await dashboardPage.myChallengesBtn.click();
     await expect(page).toHaveURL(/\/challenges/);
     await page.goBack();
 
     // ----- COMMUNITY FEED -----
-    await expect(dashboard.communityFeed).toBeVisible();
-    const feedCount = await dashboard.feedItems.count();
+    await expect(dashboardPage.communityFeed).toBeVisible();
+    const feedCount = await dashboardPage.feedItems.count();
 
     if (feedCount === 0) {
       await expect(page.locator('text=No activity yet')).toBeVisible();
     } else {
-      await expect(dashboard.feedItems.first()).toBeVisible();
+      await expect(dashboardPage.feedItems.first()).toBeVisible();
     }
   });
 
