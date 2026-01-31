@@ -1,7 +1,6 @@
 import User, { ensureUsername } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { generateToken } from "../middleware/auth.js";
-import redisClient from '../config/redis.js'; 
 
 // Register user
 export const register = async (req, res) => {
@@ -249,39 +248,6 @@ export const logout = (req, res) => {
   });
 };
 
-// Request OTP
-export const requestOtp = async (req, res) => {
-  const { phone } = req.body;
-  if (!phone) return res.status(400).json({ success: false, message: 'Phone required' });
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
-
-  // Store in Redis for 5 minutes
-  await redisClient.setEx(`otp:${phone}`, 300, otp);
-
-  console.log(`OTP for ${phone}: ${otp}`); // In production, send via SMS
-  res.status(200).json({ success: true, message: 'OTP sent' });
-};
-
-// Verify OTP
-export const verifyOtp = async (req, res) => {
-  const { phone, otp } = req.body;
-  if (!phone || !otp) return res.status(400).json({ success: false, message: 'Phone and OTP required' });
-
-  const storedOtp = await redisClient.get(`otp:${phone}`);
-  if (!storedOtp || storedOtp !== otp) {
-    return res.status(401).json({ success: false, message: 'Invalid or expired OTP' });
-  }
-
-  // OTP is valid, delete from Redis
-  await redisClient.del(`otp:${phone}`);
-  res.status(200).json({
-    success: true,
-    message: 'OTP verified',
-  });
-};
-
-// Update profile for OTP users (set name/password after first login)
 export const updateProfile = async (req, res) => {
   try {
     const { name, password, weeklyGoal } = req.body;
