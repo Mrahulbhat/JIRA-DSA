@@ -1,5 +1,3 @@
-import { register } from "module";
-
 const test_date = new Date().toISOString().split('T')[0]; //current date in YYYY-MM-DD format
 
 const commonConstants = {
