@@ -13,6 +13,10 @@ import "./config/passport.js";
 
 import problemsRoute from "./routes/problems.route.js";
 import authRoute from "./routes/auth.route.js";
+import dashboardRoute from "./routes/dashboard.route.js";
+import leaderboardRoute from "./routes/leaderboard.route.js";
+import challengeRoute from "./routes/challenge.route.js";
+import userRoute from "./routes/user.route.js";
 
 
 const app = express();
@@ -98,6 +102,10 @@ connectDB();
 // Routes
 app.use("/api/auth", authRoute);
 app.use("/api/problems", problemsRoute);
+app.use("/api/dashboard", dashboardRoute);
+app.use("/api/leaderboard", leaderboardRoute);
+app.use("/api/challenges", challengeRoute);
+app.use("/api/users", userRoute);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });

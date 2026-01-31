@@ -31,12 +31,20 @@ const problemSchema = new mongoose.Schema(
         },
         githubLink: {
             type: String,
-            required: true,
+            default: "",
         },
         tags: {
             type: [String],
-            required: true,
+            default: [],
         },
+        solvedAt: {
+            type: Date,
+            default: () => new Date(),
+        },
+        timeSpent: { type: String, default: "" },
+        attempts: { type: Number, default: null },
+        language: { type: String, default: "" },
+        notes: { type: String, default: "" },
     },
     { timestamps: true }
 );

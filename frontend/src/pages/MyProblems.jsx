@@ -149,11 +149,9 @@ const MyProblems = () => {
               <th className="p-3 text-left">Difficulty</th>
               <th className="p-3 text-left">Title</th>
               <th className="p-3 text-left">Topic</th>
+              <th className="p-3 text-left">Source</th>
               <th className="p-3 text-left">Tags</th>
-              <th className="p-3">Time</th>
-              <th className="p-3">Attempts</th>
-              <th className="p-3">Lang</th>
-              <th className="p-3">Solved</th>
+              <th className="p-3 text-center">Solved</th>
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -173,9 +171,10 @@ const MyProblems = () => {
                   </td>
                   <td className="p-3 font-semibold">{p.name}</td>
                   <td className="p-3">{p.topic}</td>
+                  <td className="p-3 text-slate-300">{p.source || "-"}</td>
                   <td className="p-3">
                     <div className="flex gap-2 flex-wrap">
-                      {p.tags.map((t) => (
+                      {(p.tags || []).map((t) => (
                         <span
                           key={t}
                           className="px-2 py-0.5 text-xs rounded bg-purple-500/20 text-purple-300 border border-purple-500/30"
@@ -183,11 +182,9 @@ const MyProblems = () => {
                           {t}
                         </span>
                       ))}
+                      {(p.tags || []).length === 0 && <span className="text-slate-500">-</span>}
                     </div>
                   </td>
-                  <td className="p-3 text-center">{p.timeSpent || "-"}</td>
-                  <td className="p-3 text-center">{p.attempts || "-"}</td>
-                  <td className="p-3 text-center">{p.language || "-"}</td>
                   <td className="p-3 text-center text-gray-400">
                     {p.solvedAt ? formatDate(p.solvedAt) : "-"}
                   </td>
@@ -198,17 +195,16 @@ const MyProblems = () => {
                           setExpandedProblem(expandedProblem === p._id ? null : p._id)
                         }
                         className="p-2 bg-purple-600/20 rounded hover:bg-purple-600/30"
+                        title="Notes & solution"
                       >
                         <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 bg-blue-600/20 rounded hover:bg-blue-600/30">
-                        <Edit className="w-4 h-4" />
                       </button>
                       <a
                         href={p.problemLink || "#"}
                         target="_blank"
                         rel="noreferrer"
                         className="p-2 bg-orange-600/20 rounded hover:bg-orange-600/30"
+                        title="Open problem"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -217,12 +213,16 @@ const MyProblems = () => {
                 </tr>
 
                 {expandedProblem === p._id && (
-                  <tr className="bg-black/40">
-                    <td colSpan={9} className="p-4">
-                      <p className="text-blue-300 mb-2">{p.notes || ""}</p>
-                      <pre className="bg-slate-900 p-3 rounded text-green-400 text-xs overflow-x-auto">
-                        {p.codeSnippet || ""}
-                      </pre>
+                  <tr className="bg-slate-800/80">
+                    <td colSpan={7} className="p-4">
+                      {p.notes && <p className="text-slate-300 mb-2 whitespace-pre-wrap">{p.notes}</p>}
+                      {p.githubLink ? (
+                        <a href={p.githubLink} target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 text-sm inline-flex items-center gap-1">
+                          <ExternalLink className="w-4 h-4" /> View solution
+                        </a>
+                      ) : !p.notes && (
+                        <p className="text-slate-500 text-sm">No notes or solution link.</p>
+                      )}
                     </td>
                   </tr>
                 )}

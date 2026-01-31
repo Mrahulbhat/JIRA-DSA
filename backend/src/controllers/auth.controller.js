@@ -1,4 +1,4 @@
-import User from "../models/user.model.js";
+import User, { ensureUsername } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { generateToken } from "../middleware/auth.js";
 import redisClient from '../config/redis.js'; 
@@ -33,6 +33,7 @@ export const register = async (req, res) => {
     });
 
     await user.save();
+    await ensureUsername(user);
 
     // Generate JWT token
     const token = generateToken(user._id, user.phone);
@@ -44,6 +45,7 @@ export const register = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         phone: user.phone,
       },
     });
@@ -89,6 +91,8 @@ export const login = async (req, res) => {
       });
     }
 
+    await ensureUsername(user);
+
     // Generate JWT token
     const token = generateToken(user._id, user.phone);
 
@@ -99,6 +103,7 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         phone: user.phone,
       },
     });
@@ -154,7 +159,7 @@ export const getSession = async (req, res) => {
     // Verify token
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
-      const user = await User.findById(decoded.userId);
+      let user = await User.findById(decoded.userId);
 
       if (!user) {
         return res.status(404).json({
@@ -163,11 +168,14 @@ export const getSession = async (req, res) => {
         });
       }
 
+      user = await ensureUsername(user);
+
       res.status(200).json({
         success: true,
         user: {
           id: user._id,
           name: user.name,
+          username: user.username,
           phone: user.phone,
         },
       });
@@ -188,7 +196,7 @@ export const getSession = async (req, res) => {
 // Get current user
 export const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId);
+    let user = await User.findById(req.user.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -197,11 +205,14 @@ export const getCurrentUser = async (req, res) => {
       });
     }
 
+    user = await ensureUsername(user);
+
     res.status(200).json({
       success: true,
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         phone: user.phone,
       },
     });
@@ -268,7 +279,7 @@ export const verifyOtp = async (req, res) => {
 // Update profile for OTP users (set name/password after first login)
 export const updateProfile = async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { name, password, weeklyGoal } = req.body;
     const userId = req.user.userId;
 
     const user = await User.findById(userId);
@@ -282,6 +293,9 @@ export const updateProfile = async (req, res) => {
     if (password) {
       user.password = password; // will be hashed by pre-save hook
     }
+    if (typeof weeklyGoal === "number" && weeklyGoal >= 0) {
+      user.weeklyGoal = weeklyGoal;
+    }
 
     await user.save();
 
@@ -291,6 +305,7 @@ export const updateProfile = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        username: user.username,
         phone: user.phone,
       },
     });

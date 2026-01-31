@@ -35,7 +35,7 @@ const Navbar = () => {
         {user && (
           <div className="flex items-center gap-3">
             <span id="userName_navbar" className="text-sm text-gray-300">
-              Welcome, <span className="text-blue-300 font-medium">{user.name}</span>
+              Welcome, <span className="text-blue-300 font-medium">@{user.username || user.name || "user"}</span>
             </span>
             <button
               className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-red-800/50 to-red-700/50 border border-red-700/50 hover:border-red-500/30 hover:from-red-600/20 hover:to-red-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"

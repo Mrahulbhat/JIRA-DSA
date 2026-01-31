@@ -48,6 +48,7 @@ const AddProblem = () => {
     problemLink: "",
     githubLink: "",
     tags: "",
+    notes: "",
   });
 
   const handleInputChange = (e) => {
@@ -69,30 +70,18 @@ const AddProblem = () => {
       problemLink,
       githubLink,
       tags,
+      notes,
     } = formData;
 
-    if (
-      !name ||
-      !difficulty ||
-      !topic ||
-      !source ||
-      !problemLink ||
-      !githubLink ||
-      !tags
-    ) {
-      toast.error("Please fill all required fields");
+    if (!name || !difficulty || !topic || !source || !problemLink) {
+      toast.error("Please fill name, difficulty, topic, source, and problem link");
       return;
     }
 
-    const tagsArray = tags
+    const tagsArray = (tags || "")
       .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean);
-
-    if (tagsArray.length === 0) {
-      toast.error("Please add at least one tag");
-      return;
-    }
 
     setLoading(true);
 
@@ -103,8 +92,9 @@ const AddProblem = () => {
         topic,
         source,
         problemLink,
-        githubLink,
+        githubLink: githubLink || undefined,
         tags: tagsArray,
+        notes: notes || undefined,
       });
 
       toast.success("Problem added successfully!");
@@ -197,22 +187,29 @@ const AddProblem = () => {
           <input
             type="url"
             name="githubLink"
-            placeholder="GitHub solution link"
+            placeholder="GitHub / solution link (optional)"
             value={formData.githubLink}
             onChange={handleInputChange}
             className="w-full border px-4 py-3 rounded-lg"
-            required
           />
 
           {/* Tags */}
           <input
             type="text"
             name="tags"
-            placeholder="array, dp, graph"
+            placeholder="Tags: array, dp, graph (optional)"
             value={formData.tags}
             onChange={handleInputChange}
             className="w-full border px-4 py-3 rounded-lg"
-            required
+          />
+
+          <textarea
+            name="notes"
+            placeholder="Notes (optional)"
+            value={formData.notes}
+            onChange={handleInputChange}
+            className="w-full border px-4 py-3 rounded-lg min-h-[80px]"
+            rows={3}
           />
 
           <button

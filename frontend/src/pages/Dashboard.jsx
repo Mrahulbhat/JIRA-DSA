@@ -8,13 +8,10 @@ import {
   Target, 
   TrendingUp,
   Users,
-  Calendar,
   Award,
   Zap,
   Clock,
   CheckCircle2,
-  XCircle,
-  Eye,
   ThumbsUp,
   MessageCircle,
   Share2,
@@ -24,6 +21,23 @@ import {
   Star
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { axiosInstance } from "../lib/axios";
+
+const getInitials = (name) => {
+  if (!name) return "?";
+  return name.split(/\s+/).map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+};
+
+const timeAgo = (dateStr) => {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const sec = Math.floor((now - d) / 1000);
+  if (sec < 60) return "just now";
+  if (sec < 3600) return `${Math.floor(sec / 60)} min ago`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)} hours ago`;
+  if (sec < 604800) return `${Math.floor(sec / 86400)} days ago`;
+  return d.toLocaleDateString();
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,9 +45,8 @@ const Dashboard = () => {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
   const [problemOfTheDay, setProblemOfTheDay] = useState(null);
-  const [friendsActivity, setFriendsActivity] = useState([]);
+  const [feedActivity, setFeedActivity] = useState([]);
   const [recentProblems, setRecentProblems] = useState([]);
-  
   const [stats, setStats] = useState({
     totalSolved: 0,
     easyCount: 0,
@@ -52,88 +65,74 @@ const Dashboard = () => {
   const loadDashboardData = async () => {
     try {
       setPageLoading(true);
-      // API calls would go here
-      // Simulating data for design
-      setTimeout(() => {
-        setCurrentStreak(7);
-        setLongestStreak(21);
+      const [statsRes, feedRes, potdRes, myProblemsRes] = await Promise.all([
+        axiosInstance.get("/dashboard/stats"),
+        axiosInstance.get("/dashboard/feed?limit=15"),
+        axiosInstance.get("/dashboard/problem-of-the-day"),
+        axiosInstance.get("/problems"),
+      ]);
+
+      if (statsRes.data?.success && statsRes.data.stats) {
+        const s = statsRes.data.stats;
+        setCurrentStreak(s.currentStreak ?? 0);
+        setLongestStreak(s.longestStreak ?? 0);
         setStats({
-          totalSolved: 245,
-          easyCount: 120,
-          mediumCount: 95,
-          hardCount: 30,
-          weeklyGoal: 10,
-          weeklyProgress: 7,
-          rank: 12,
-          totalUsers: 1453
+          totalSolved: s.totalSolved ?? 0,
+          easyCount: s.easyCount ?? 0,
+          mediumCount: s.mediumCount ?? 0,
+          hardCount: s.hardCount ?? 0,
+          weeklyGoal: s.weeklyGoal ?? 10,
+          weeklyProgress: s.weeklyProgress ?? 0,
+          rank: s.rank ?? 0,
+          totalUsers: s.totalUsers ?? 0
         });
+      }
+
+      if (feedRes.data?.success && Array.isArray(feedRes.data.feed)) {
+        setFeedActivity(
+          feedRes.data.feed.map((item) => ({
+            id: item._id,
+            name: item.user?.username ? `@${item.user.username}` : (item.user?.name || "Anonymous"),
+            avatar: getInitials(item.user?.name || item.user?.username),
+            lastProblem: item.name,
+            difficulty: item.difficulty,
+            timeAgo: timeAgo(item.solvedAt),
+          }))
+        );
+      }
+
+      if (potdRes.data?.success && potdRes.data.problemOfTheDay) {
+        const p = potdRes.data.problemOfTheDay;
         setProblemOfTheDay({
-          id: 1,
-          title: "Two Sum",
-          difficulty: "Easy",
-          solved: false,
-          category: "Arrays",
-          timeLimit: "12 hours left",
-          solvedByFriends: 5
+          id: p.id,
+          title: p.title,
+          difficulty: p.difficulty,
+          solved: p.solved === true,
+          category: p.category,
+          timeLimit: "Solve today!",
+          problemLink: p.problemLink,
+          source: p.source
         });
-        setFriendsActivity([
-          { 
-            id: 1, 
-            name: "Rahul Sharma", 
-            avatar: "RS",
-            problemsSolved: 312,
-            lastProblem: "Binary Tree Maximum Path Sum",
-            difficulty: "Hard",
-            timeAgo: "2 hours ago",
-            streak: 15
-          },
-          { 
-            id: 2, 
-            name: "Priya Kumar", 
-            avatar: "PK",
-            problemsSolved: 287,
-            lastProblem: "Longest Palindromic Substring",
-            difficulty: "Medium",
-            timeAgo: "5 hours ago",
-            streak: 23
-          },
-          { 
-            id: 3, 
-            name: "Arjun Patel", 
-            avatar: "AP",
-            problemsSolved: 256,
-            lastProblem: "Merge K Sorted Lists",
-            difficulty: "Hard",
-            timeAgo: "1 day ago",
-            streak: 8
-          }
-        ]);
-        setRecentProblems([
-          {
-            id: 1,
-            title: "Reverse Linked List",
-            difficulty: "Easy",
-            category: "Linked List",
-            solvedAt: new Date().toISOString(),
-            timeSpent: "15 min",
-            likes: 12,
-            comments: 3
-          },
-          {
-            id: 2,
-            title: "Valid Parentheses",
-            difficulty: "Easy",
-            category: "Stack",
-            solvedAt: new Date(Date.now() - 86400000).toISOString(),
-            timeSpent: "20 min",
-            likes: 8,
-            comments: 1
-          }
-        ]);
-        setPageLoading(false);
-      }, 1000);
+      } else {
+        setProblemOfTheDay(null);
+      }
+
+      if (myProblemsRes.data?.success && Array.isArray(myProblemsRes.data.problems)) {
+        const problems = myProblemsRes.data.problems.slice(0, 5).map((p) => ({
+          id: p._id,
+          title: p.name,
+          difficulty: p.difficulty,
+          category: p.topic,
+          solvedAt: p.solvedAt || p.createdAt,
+          timeSpent: "-",
+          likes: 0,
+          comments: 0
+        }));
+        setRecentProblems(problems);
+      }
     } catch (error) {
-      toast.error("Failed to load dashboard");
+      toast.error(error.response?.data?.message || "Failed to load dashboard");
+    } finally {
       setPageLoading(false);
     }
   };
@@ -249,7 +248,9 @@ const Dashboard = () => {
                     ></div>
                   </div>
                   <p className="text-blue-300 text-xs mt-2">
-                    {stats.weeklyGoal - stats.weeklyProgress} more to go!
+                    {stats.weeklyProgress >= stats.weeklyGoal
+                      ? "Goal reached! 🎉"
+                      : `${stats.weeklyGoal - stats.weeklyProgress} more to go!`}
                   </p>
                 </div>
               </div>
@@ -298,13 +299,15 @@ const Dashboard = () => {
                       <span className="text-green-400 font-semibold">Solved</span>
                     </div>
                   ) : (
-                    <button 
-                      onClick={() => navigate(`/problem/${problemOfTheDay.id}`)}
+                    <a 
+                      href={problemOfTheDay.problemLink || "#"}
+                      target="_blank"
+                      rel="noreferrer"
                       className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold px-6 py-3 rounded-xl inline-flex items-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-emerald-500/25"
                     >
                       <Zap className="w-5 h-5" />
                       Solve Now
-                    </button>
+                    </a>
                   )}
                 </div>
                 
@@ -321,8 +324,7 @@ const Dashboard = () => {
                       {problemOfTheDay.category}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {problemOfTheDay.solvedByFriends} friends solved
+                      Source: {problemOfTheDay.source || problemOfTheDay.category}
                     </span>
                   </div>
                 </div>
@@ -340,54 +342,58 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Users className="w-6 h-6 text-purple-400" />
-                      <h2 className="text-white text-xl font-bold">Friends Activity</h2>
+                      <h2 className="text-white text-xl font-bold">Community Activity</h2>
                     </div>
-                    <button className="text-purple-400 hover:text-purple-300 text-sm font-semibold flex items-center gap-1">
-                      View All
+                    <button 
+                      onClick={() => navigate("/leaderboard")}
+                      className="text-purple-400 hover:text-purple-300 text-sm font-semibold flex items-center gap-1"
+                    >
+                      Leaderboard
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
-                  <p className="text-gray-400 text-sm mt-1">See what your friends are solving</p>
+                  <p className="text-gray-400 text-sm mt-1">See what others are solving</p>
                 </div>
 
                 <div className="p-6 space-y-4">
-                  {friendsActivity.map((friend) => (
+                  {feedActivity.map((item) => (
                     <div 
-                      key={friend.id}
+                      key={item.id}
                       className="bg-gradient-to-r from-gray-800/50 to-gray-700/30 rounded-xl p-5 border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
-                            {friend.avatar}
+                            {item.avatar}
                           </div>
                           <div>
-                            <h3 className="text-white font-semibold">{friend.name}</h3>
-                            <p className="text-gray-400 text-sm">{friend.problemsSolved} problems solved</p>
+                            <h3 className="text-white font-semibold">{item.name}</h3>
+                            <p className="text-gray-400 text-sm">solved a problem</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 bg-orange-500/20 px-3 py-1 rounded-lg">
-                          <Flame className="w-4 h-4 text-orange-400" />
-                          <span className="text-orange-300 text-sm font-semibold">{friend.streak}</span>
-                        </div>
                       </div>
-                      
                       <div className="bg-black/30 rounded-lg p-3 border border-gray-600/30">
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-medium text-sm">{friend.lastProblem}</p>
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(friend.difficulty)}`}>
-                            {friend.difficulty}
+                          <p className="text-white font-medium text-sm">{item.lastProblem}</p>
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(item.difficulty)}`}>
+                            {item.difficulty}
                           </span>
                         </div>
-                        <p className="text-gray-500 text-xs">{friend.timeAgo}</p>
+                        <p className="text-gray-500 text-xs">{item.timeAgo}</p>
                       </div>
                     </div>
                   ))}
 
+                  {feedActivity.length === 0 && (
+                    <p className="text-center text-gray-500 py-4">No activity yet. Add a problem to get started!</p>
+                  )}
                   <div className="text-center pt-4">
-                    <button className="text-purple-400 hover:text-purple-300 font-semibold text-sm inline-flex items-center gap-2 transition-colors">
-                      <Users className="w-4 h-4" />
-                      Invite More Friends
+                    <button 
+                      onClick={() => navigate("/leaderboard")}
+                      className="text-purple-400 hover:text-purple-300 font-semibold text-sm inline-flex items-center gap-2 transition-colors"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      View Leaderboard
                     </button>
                   </div>
                 </div>
@@ -411,13 +417,19 @@ const Dashboard = () => {
                     <Plus className="w-5 h-5" />
                     Add Problem Solved
                   </button>
-                  <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105">
+                  <button 
+                    onClick={() => navigate("/leaderboard")}
+                    className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
+                  >
                     <Trophy className="w-5 h-5" />
                     View Leaderboard
                   </button>
-                  <button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105">
+                  <button 
+                    onClick={() => navigate("/challenges")}
+                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
+                  >
                     <Target className="w-5 h-5" />
-                    Set Weekly Goal
+                    My Challenges
                   </button>
                 </div>
               </div>

@@ -27,10 +27,10 @@ export const addProblem = async (req, res) => {
     if (!userId)
       return res.status(401).json({ success: false, message: "User ID missing" });
 
-    const { name, difficulty, topic, source, problemLink, githubLink, tags } = req.body;
+    const { name, difficulty, topic, source, problemLink, githubLink, tags, timeSpent, attempts, language, notes } = req.body;
 
-    if (!name || !difficulty || !topic || !source || !problemLink || !githubLink || !tags)
-      return res.status(400).json({ success: false, message: "All fields are required" });
+    if (!name || !difficulty || !topic || !source || !problemLink)
+      return res.status(400).json({ success: false, message: "name, difficulty, topic, source, and problemLink are required" });
 
     const newProblem = await Problem.create({
       userId,
@@ -39,8 +39,12 @@ export const addProblem = async (req, res) => {
       topic,
       source,
       problemLink,
-      githubLink,
-      tags,
+      githubLink: githubLink || "",
+      tags: Array.isArray(tags) ? tags : [],
+      timeSpent: timeSpent || "",
+      attempts: attempts != null ? Number(attempts) : null,
+      language: language || "",
+      notes: notes || "",
     });
 
     res.status(201).json({ success: true, message: "Problem added successfully", problem: newProblem });

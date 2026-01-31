@@ -1,16 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat } from "lucide-react"; 
+import { Menu, X, TrendingUp, Trophy, Target, Home } from "lucide-react";
+import { axiosInstance } from "../lib/axios";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [pendingChallenges, setPendingChallenges] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        const fetchPending = async () => {
+            try {
+                const res = await axiosInstance.get("/challenges/pending-count");
+                if (res.data?.success && typeof res.data.pendingReceived === "number") {
+                    setPendingChallenges(res.data.pendingReceived);
+                }
+            } catch {
+                setPendingChallenges(0);
+            }
+        };
+        fetchPending();
+    }, [location.pathname]);
 
     const tabs = [
         { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
         { name: "My Problems", icon: TrendingUp, path: "/myProblems", id: "myProblems" },
-        { name: "My Community", icon: Wallet, path: "/accounts", id: "accounts" },
+        { name: "Leaderboard", icon: Trophy, path: "/leaderboard", id: "leaderboard" },
+        { name: "Challenges", icon: Target, path: "/challenges", id: "challenges", badge: pendingChallenges },
     ];
 
     const handleNavigation = (path) => {
@@ -43,19 +60,27 @@ const Sidebar = () => {
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const active = isActive(tab.path);
+                        const badgeCount = tab.badge ?? 0;
 
                         return (
                             <button
                                 id={tab.id}
                                 key={tab.id}
                                 onClick={() => handleNavigation(tab.path)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
+                                className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
                                         ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25 scale-105"
                                         : "text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-1"
                                     }`}
                             >
-                                <Icon className="w-5 h-5 flex-shrink-0" />
-                                <span className="font-semibold text-sm">{tab.name}</span>
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <Icon className="w-5 h-5 flex-shrink-0" />
+                                    <span className="font-semibold text-sm truncate">{tab.name}</span>
+                                </div>
+                                {badgeCount > 0 && (
+                                    <span className="flex-shrink-0 min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center rounded-full bg-amber-500 text-black text-xs font-bold animate-pulse">
+                                        {badgeCount > 99 ? "99+" : badgeCount}
+                                    </span>
+                                )}
                             </button>
                         );
                     })}

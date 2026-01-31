@@ -4,6 +4,13 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema(
   {
     name: String,
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+    },
     phone: {
       type: Number,
       unique: true,
@@ -13,10 +20,40 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false
     },
-    googleId: String
+    googleId: String,
+    weeklyGoal: {
+      type: Number,
+      default: 10,
+    },
   },
   { timestamps: true }
 );
+
+/** Generate a URL-safe slug from a string */
+function slugify(str) {
+  if (!str || typeof str !== "string") return "";
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .slice(0, 20) || "user";
+}
+
+/** Generate unique username: base + random suffix */
+export async function ensureUsername(user) {
+  if (user.username) return user;
+  const base = slugify(user.name) || "user";
+  let username = `${base}_${Math.random().toString(36).slice(2, 8)}`;
+  let exists = await mongoose.model("User").findOne({ username });
+  while (exists) {
+    username = `${base}_${Math.random().toString(36).slice(2, 8)}`;
+    exists = await mongoose.model("User").findOne({ username });
+  }
+  user.username = username;
+  await user.save();
+  return user;
+}
 
 
 // Hash password before saving

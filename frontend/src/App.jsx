@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 
 import Dashboard from "./pages/Dashboard";
 import AddProblem from "./pages/AddProblem";
-// import EditProblem from "./pages/EditProblem";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import MyProblems from "./pages/MyProblems";
+import Leaderboard from "./pages/Leaderboard";
+import Challenges from "./pages/Challenges";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
@@ -85,6 +86,24 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <MyProblems />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/challenges"
+              element={
+                <ProtectedRoute>
+                  <Challenges />
                 </ProtectedRoute>
               }
             />

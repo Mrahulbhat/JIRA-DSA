@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import User from "../models/user.model.js";
+import User, { ensureUsername } from "../models/user.model.js";
 
 // Load environment variables
 const __filename = fileURLToPath(import.meta.url);
@@ -33,19 +33,19 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const existingUser = await User.findOne({
-          email: profile.emails[0].value
+          googleId: profile.id
         });
 
         if (existingUser) {
-          return done(null, existingUser);
+          const user = await ensureUsername(existingUser);
+          return done(null, user);
         }
 
         const user = await User.create({
           name: profile.displayName,
-          email: profile.emails[0].value,
           googleId: profile.id
         });
-
+        await ensureUsername(user);
         done(null, user);
       } catch (err) {
         done(err, null);
