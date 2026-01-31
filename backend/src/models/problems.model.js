@@ -41,8 +41,6 @@ const problemSchema = new mongoose.Schema(
             type: Date,
             default: () => new Date(),
         },
-        timeSpent: { type: String, default: "" },
-        attempts: { type: Number, default: null },
         language: { type: String, default: "" },
         notes: { type: String, default: "" },
     },

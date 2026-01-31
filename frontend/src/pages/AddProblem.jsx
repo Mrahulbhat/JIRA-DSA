@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  Plus,
-  Loader,
-  BookOpen,
-} from "lucide-react";
+import { ArrowLeft, Plus, Loader, BookOpen } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 
@@ -37,6 +32,7 @@ const AddProblem = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
+
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
 
@@ -51,8 +47,10 @@ const AddProblem = () => {
     notes: "",
   });
 
+  // ================= FETCH PROBLEM (EDIT MODE) =================
   useEffect(() => {
-    if (!id) return;
+    if (!isEdit) return;
+
     const fetchProblem = async () => {
       try {
         const res = await axiosInstance.get(`/problems/${id}`);
@@ -76,9 +74,11 @@ const AddProblem = () => {
         setFetching(false);
       }
     };
-    fetchProblem();
-  }, [id, navigate]);
 
+    fetchProblem();
+  }, [id, isEdit, navigate]);
+
+  // ================= INPUT HANDLER =================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -87,6 +87,7 @@ const AddProblem = () => {
     }));
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -102,13 +103,13 @@ const AddProblem = () => {
     } = formData;
 
     if (!name || !difficulty || !topic || !source || !problemLink) {
-      toast.error("Please fill name, difficulty, topic, source, and problem link");
+      toast.error("Please fill all required fields");
       return;
     }
 
     const tagsArray = (tags || "")
       .split(",")
-      .map((tag) => tag.trim())
+      .map((t) => t.trim())
       .filter(Boolean);
 
     setLoading(true);
@@ -121,40 +122,43 @@ const AddProblem = () => {
           topic,
           source,
           problemLink,
-          githubLink: githubLink || undefined,
+          githubLink: githubLink || "",
           tags: tagsArray,
-          notes: notes || undefined,
+          notes: notes || "",
         });
-        toast.success("Problem updated successfully!");
+        toast.success("Problem updated successfully");
       } else {
-        await axiosInstance.post("/problems/add", {
+        await axiosInstance.post("/problems", {
           name,
           difficulty,
           topic,
           source,
           problemLink,
-          githubLink: githubLink || undefined,
+          githubLink: githubLink || "",
           tags: tagsArray,
-          notes: notes || undefined,
+          notes: notes || "",
         });
-        toast.success("Problem added successfully!");
+        toast.success("Problem added successfully");
       }
+
       navigate("/myProblems");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to add problem");
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
+  // ================= LOADING SCREEN =================
   if (fetching) {
     return (
-      <div className="min-h-screen bg-black p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <Loader className="w-10 h-10 animate-spin text-purple-400" />
       </div>
     );
   }
 
+  // ================= UI =================
   return (
     <div className="min-h-screen bg-black p-6">
       <button
@@ -170,18 +174,16 @@ const AddProblem = () => {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
           <input
             type="text"
             name="name"
             placeholder="Problem name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
             required
           />
 
-          {/* Difficulty + Topic */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <select
               name="difficulty"
@@ -210,25 +212,23 @@ const AddProblem = () => {
             </select>
           </div>
 
-          {/* Source */}
           <input
             type="text"
             name="source"
             placeholder="LeetCode / Codeforces / GFG"
             value={formData.source}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
             required
           />
 
-          {/* Links */}
           <input
             type="url"
             name="problemLink"
             placeholder="Problem link"
             value={formData.problemLink}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
             required
           />
 
@@ -238,17 +238,16 @@ const AddProblem = () => {
             placeholder="GitHub / solution link (optional)"
             value={formData.githubLink}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
           />
 
-          {/* Tags */}
           <input
             type="text"
             name="tags"
-            placeholder="Tags: array, dp, graph (optional)"
+            placeholder="Tags: array, dp, graph"
             value={formData.tags}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
           />
 
           <textarea
@@ -256,8 +255,7 @@ const AddProblem = () => {
             placeholder="Notes (optional)"
             value={formData.notes}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400 min-h-[80px]"
-            rows={3}
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg min-h-[80px]"
           />
 
           <button

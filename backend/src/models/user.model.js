@@ -14,11 +14,11 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: Number,
       unique: true,
-      sparse: true 
+      sparse: true,
     },
     password: {
       type: String,
-      select: false
+      select: false,
     },
     googleId: String,
     weeklyGoal: {
@@ -32,48 +32,74 @@ const userSchema = new mongoose.Schema(
 /** Generate a URL-safe slug from a string */
 function slugify(str) {
   if (!str || typeof str !== "string") return "";
-  return str
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-z0-9_]/g, "")
-    .slice(0, 20) || "user";
+  return (
+    str
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "")
+      .slice(0, 20) || "user"
+  );
 }
 
-/** Generate unique username: base + random suffix */
+/**
+ * Ensure user has a username
+ * Strategy:
+ * 1. Try clean usernames (rahul_bhat, rahulbhat, rahul_bhat1...)
+ * 2. Fallback to funky/random
+ */
 export async function ensureUsername(user) {
   if (user.username) return user;
-  const base = slugify(user.name) || "user";
-  let username = `${base}_${Math.random().toString(36).slice(2, 8)}`;
-  let exists = await mongoose.model("User").findOne({ username });
-  while (exists) {
-    username = `${base}_${Math.random().toString(36).slice(2, 8)}`;
-    exists = await mongoose.model("User").findOne({ username });
-  }
-  user.username = username;
-  await user.save();
-  return user;
-}
 
+  const User = mongoose.model("User");
+  const base = slugify(user.name) || "user";
+
+  const candidates = [
+    base,                   // rahul_bhat
+    base.replace(/_/g, ""), // rahulbhat
+  ];
+
+  for (let i = 1; i <= 5; i++) {
+    candidates.push(`${base}${i}`);
+  }
+
+  // Try clean usernames first
+  for (const username of candidates) {
+    try {
+      user.username = username;
+      await user.save();
+      return user;
+    } catch (err) {
+      if (err.code !== 11000) throw err; // not duplicate key
+    }
+  }
+
+  // Fallback: funky usernames
+  for (let i = 0; i < 5; i++) {
+    const funky = `${base}_${Math.random().toString(36).slice(2, 8)}`;
+    try {
+      user.username = funky;
+      await user.save();
+      return user;
+    } catch (err) {
+      if (err.code !== 11000) throw err;
+    }
+  }
+
+  throw new Error("Could not generate unique username");
+}
 
 // Hash password before saving
 userSchema.pre("save", async function () {
-  // Skip if password is not modified or doesn't exist (e.g., Google OAuth)
-  if (!this.isModified("password") || !this.password) {
-    return;
-  }
-  
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  } catch (error) {
-    throw error;
-  }
+  if (!this.isModified("password") || !this.password) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Method to compare passwords
+// Compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
