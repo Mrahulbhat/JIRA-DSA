@@ -128,7 +128,7 @@ const AddProblem = () => {
         });
         toast.success("Problem updated successfully");
       } else {
-        await axiosInstance.post("/problems", {
+        await axiosInstance.post("/problems/add", {
           name,
           difficulty,
           topic,
