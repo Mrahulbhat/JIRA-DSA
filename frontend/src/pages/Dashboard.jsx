@@ -389,7 +389,7 @@ const Dashboard = () => {
                   )}
                   <div className="text-center pt-4">
                     <button 
-                      onClick={() => navigate("/leaderboard")}
+                      onClick={() => navigate("/problems/add")}
                       className="text-purple-400 hover:text-purple-300 font-semibold text-sm inline-flex items-center gap-2 transition-colors"
                     >
                       <Trophy className="w-4 h-4" />
@@ -411,7 +411,7 @@ const Dashboard = () => {
                 </h3>
                 <div className="space-y-3">
                   <button 
-                    onClick={() => navigate('/add-problem')}
+                    onClick={() => navigate('/problems/add')}
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
                   >
                     <Plus className="w-5 h-5" />
