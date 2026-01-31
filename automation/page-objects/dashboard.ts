@@ -13,7 +13,7 @@ export class DashboardPage extends BasePage {
   readonly weeklyGoal: Locator;
   readonly globalRank: Locator;
 
-  // POTD
+  // Problem of the Day
   readonly potdSection: Locator;
   readonly potdTitle: Locator;
   readonly potdSolveBtn: Locator;
@@ -22,29 +22,43 @@ export class DashboardPage extends BasePage {
   // Quick actions
   readonly addProblemBtn: Locator;
   readonly leaderboardBtn: Locator;
+  readonly myChallengesBtn: Locator;
+
+  // Community Feed
+  readonly communityFeed: Locator;
+  readonly feedItems: Locator;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
 
-    this.title = page.getByTestId('dashboard-title');
+    // Header
+    this.title = page.getByTestId('dashboard-root').locator('h1');
 
-    this.currentStreak = page.getByTestId('current-streak-value');
-    this.totalSolved = page.getByTestId('total-solved-value');
-    this.weeklyGoal = page.getByTestId('weekly-progress-value');
-    this.globalRank = page.getByTestId('global-rank-value');
+    // Cards
+    this.currentStreak = page.getByTestId('current-streak');
+    this.totalSolved = page.getByTestId('total-solved');
+    this.weeklyGoal = page.getByTestId('weekly-goal');
+    this.globalRank = page.getByTestId('global-rank');
 
-    this.potdSection = page.getByTestId('potd-section');
-    this.potdTitle = page.getByTestId('potd-title');
-    this.potdSolveBtn = page.getByTestId('potd-solve-btn');
-    this.potdSolvedBadge = page.getByTestId('potd-solved-badge');
+    // Problem of the Day
+    this.potdSection = page.getByTestId('problem-of-the-day');
+    this.potdTitle = this.potdSection.locator('h3, h2'); // matches h2/h3 inside POTD
+    this.potdSolveBtn = this.potdSection.getByTestId('solve-now-button');
+    this.potdSolvedBadge = this.potdSection.locator('text=Solved');
 
-    this.addProblemBtn = page.getByTestId('add-problem-btn');
-    this.leaderboardBtn = page.getByTestId('leaderboard-btn');
+    // Quick actions
+    this.addProblemBtn = page.getByTestId('add-problem-quick');
+    this.leaderboardBtn = page.getByTestId('view-leaderboard-quick');
+    this.myChallengesBtn = page.getByTestId('my-challenges-quick');
+
+    // Community feed
+    this.communityFeed = page.getByTestId('community-activity');
+    this.feedItems = this.communityFeed.getByTestId('feed-item');
   }
 
   async verifyDashboardLoaded() {
     await expect(this.title).toBeVisible();
-    await expect(this.title).toHaveText('DSA Arena');
+    await expect(this.title).toHaveText(/DSA Arena/i);
   }
 }
