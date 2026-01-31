@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Phone, Lock, User, LogIn, Loader, Eye, EyeOff } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
+import { getApiBaseUrl } from "../lib/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -95,7 +96,7 @@ const SignupPage = () => {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    window.location.href = `${getApiBaseUrl()}/auth/google`;
   };
 
   return (
