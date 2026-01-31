@@ -75,7 +75,8 @@ export const getDashboardStats = async (req, res) => {
     ]);
     const totalUsers = await User.countDocuments();
     const rankIndex = allCounts.findIndex((c) => c._id.toString() === userId.toString());
-    const rank = rankIndex === -1 ? totalUsers + 1 : rankIndex + 1;
+    // Users with 0 problems are tied at (leaderboardSize + 1), so rank never exceeds totalUsers
+    const rank = rankIndex === -1 ? allCounts.length + 1 : rankIndex + 1;
 
     res.status(200).json({
       success: true,
