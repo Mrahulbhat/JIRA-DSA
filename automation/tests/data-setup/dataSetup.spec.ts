@@ -4,9 +4,13 @@ import { navigateToPage } from '../../page-objects/common-functions.js';
 import commonConstants from '../../constants/commonConstants.js';
 
 //CAUTION : THIS IS FOR DATA SETUP
-//ONLY FOR TESTING
 
-test.describe.serial('Create Data Setup', () => {
+test.describe('Create Data Setup', () => {
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
+});
+test.describe('Delete Data Setup', () => {
     test.beforeEach(async ({ loginPage }) => {
         await loginPage.loginUser();
     });
