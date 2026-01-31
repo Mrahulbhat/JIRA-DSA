@@ -83,8 +83,8 @@ export const getMyChallenges = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    const sent = challenges.filter((c) => c.challengerId._id.toString() === userId);
-    const received = challenges.filter((c) => c.challengeeId._id.toString() === userId);
+    const sent = challenges.filter((c) => c.challengerId?._id.toString() === userId);
+    const received = challenges.filter((c) => c.challengeeId?._id.toString() === userId);
 
     res.status(200).json({
       success: true,
