@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, LogIn, Loader, Phone } from "lucide-react";
+import { Lock, LogIn, Loader, Phone, Eye, EyeOff } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 
@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check for token in URL params (from Google OAuth redirect)
   useEffect(() => {
@@ -34,10 +35,21 @@ const LoginPage = () => {
       return;
     }
 
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axiosInstance.post("/auth/login", {
-        phone,
+        phone: phoneDigits,
         password,
       });
 
@@ -88,17 +100,19 @@ const LoginPage = () => {
           <form onSubmit={handleLogin} className="space-y-4 mb-6">
             {/* Phone Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Phone
+              <label htmlFor="phoneInputField" className="block text-gray-300 text-sm font-medium mb-2">
+                Phone Number
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="phoneInputField"
+                  id="phoneInputField"
                   type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="your phone number"
+                  placeholder="10-digit phone number"
                   className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
                   disabled={isLoading}
                 />
@@ -107,20 +121,30 @@ const LoginPage = () => {
 
             {/* Password Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="passwordInputField" className="block text-gray-300 text-sm font-medium mb-2">
                 Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="passwordInputField"
-                  type="password"
+                  id="passwordInputField"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
+                  className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-10 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
                   disabled={isLoading}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                  disabled={isLoading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 

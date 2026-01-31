@@ -16,8 +16,11 @@ export const register = async (req, res) => {
       });
     }
 
+    // Normalize phone (DB stores Number)
+    const phoneNum = typeof phone === "string" ? parseInt(phone.replace(/\D/g, ""), 10) || phone : phone;
+
     // Check if user already exists
-    const existingUser = await User.findOne({ phone: phone });
+    const existingUser = await User.findOne({ $or: [{ phone: phoneNum }, { phone }] });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -27,8 +30,8 @@ export const register = async (req, res) => {
 
     // Create new user
     const user = new User({
-      name,
-      phone: phone,
+      name: name?.trim(),
+      phone: phoneNum,
       password,
     });
 
@@ -71,8 +74,10 @@ export const login = async (req, res) => {
     }
 
     // Check if user exists and get password field
+    // Normalize phone for lookup (DB stores Number, frontend may send string)
+    const phoneForLookup = typeof phone === "string" ? parseInt(phone, 10) || phone : phone;
     const user = await User.findOne({
-      phone: phone,
+      $or: [{ phone: phoneForLookup }, { phone }],
     }).select("+password");
 
     if (!user) {

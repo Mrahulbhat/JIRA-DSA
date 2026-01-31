@@ -35,9 +35,8 @@ const SignupPage = () => {
       return false;
     }
 
-    // Simple phone validation
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(formData.phone)) {
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 10) {
       toast.error("Please enter a valid 10-digit phone number");
       return false;
     }
@@ -69,9 +68,10 @@ const SignupPage = () => {
 
     setIsLoading(true);
     try {
+      const phoneDigits = formData.phone.replace(/\D/g, "");
       const response = await axiosInstance.post("/auth/register", {
-        name: formData.name,
-        phone: formData.phone,
+        name: formData.name.trim(),
+        phone: phoneDigits,
         password: formData.password,
       });
 
@@ -113,7 +113,7 @@ const SignupPage = () => {
           {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
-              Cashbook
+              DSA Challenger
             </h1>
             <p className="text-gray-400 text-sm">Create your account</p>
           </div>
@@ -122,15 +122,16 @@ const SignupPage = () => {
           <form onSubmit={handleSignup} className="space-y-4 mb-6">
             {/* Name Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="nameInputField" className="block text-gray-300 text-sm font-medium mb-2">
                 Full Name
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="nameInputField"
+                  id="nameInputField"
                   type="text"
                   name="name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John Doe"
@@ -142,18 +143,20 @@ const SignupPage = () => {
 
             {/* Phone Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Phone
+              <label htmlFor="phoneInputField" className="block text-gray-300 text-sm font-medium mb-2">
+                Phone Number
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="phoneInputField"
+                  id="phoneInputField"
                   type="tel"
                   name="phone"
+                  inputMode="numeric"
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="Enter your phone number"
+                  placeholder="10-digit phone number"
                   className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
                   disabled={isLoading}
                 />
@@ -162,15 +165,16 @@ const SignupPage = () => {
 
             {/* Password Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="passwordInputField" className="block text-gray-300 text-sm font-medium mb-2">
                 Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="passwordInputField"
+                  id="passwordInputField"
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
@@ -198,15 +202,16 @@ const SignupPage = () => {
 
             {/* Confirm Password Input */}
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="confirmPasswordInputField" className="block text-gray-300 text-sm font-medium mb-2">
                 Confirm Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
-                id="confirmPasswordInputField"
+                  id="confirmPasswordInputField"
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
+                  autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
