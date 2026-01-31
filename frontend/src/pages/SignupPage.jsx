@@ -162,6 +162,7 @@ export default function SignupPage() {
 
         {/* Submit */}
         <button
+          id="signupButton"
           data-testid="signup-submit-button"
           type="submit"
           disabled={loading}
