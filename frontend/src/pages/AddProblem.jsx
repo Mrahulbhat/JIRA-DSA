@@ -5,9 +5,6 @@ import {
   Plus,
   Loader,
   BookOpen,
-  Link as LinkIcon,
-  Github,
-  Tags,
 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
@@ -167,8 +164,8 @@ const AddProblem = () => {
         <ArrowLeft /> Back
       </button>
 
-      <div className="max-w-3xl mx-auto bg-white rounded-xl p-8">
-        <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+      <div className="max-w-3xl mx-auto bg-gray-900 rounded-xl p-8">
+        <h1 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
           <BookOpen /> {isEdit ? "Edit Problem" : "Add Problem"}
         </h1>
 
@@ -180,7 +177,7 @@ const AddProblem = () => {
             placeholder="Problem name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
             required
           />
 
@@ -190,19 +187,18 @@ const AddProblem = () => {
               name="difficulty"
               value={formData.difficulty}
               onChange={handleInputChange}
-              className="border px-4 py-3 rounded-lg"
+              className="bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
             >
               <option>Easy</option>
               <option>Medium</option>
               <option>Hard</option>
             </select>
 
-            {/* ✅ TOPIC DROPDOWN */}
             <select
               name="topic"
               value={formData.topic}
               onChange={handleInputChange}
-              className="border px-4 py-3 rounded-lg"
+              className="bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
               required
             >
               <option value="">Select topic</option>
@@ -221,7 +217,7 @@ const AddProblem = () => {
             placeholder="LeetCode / Codeforces / GFG"
             value={formData.source}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
             required
           />
 
@@ -232,7 +228,7 @@ const AddProblem = () => {
             placeholder="Problem link"
             value={formData.problemLink}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
             required
           />
 
@@ -242,7 +238,7 @@ const AddProblem = () => {
             placeholder="GitHub / solution link (optional)"
             value={formData.githubLink}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
           />
 
           {/* Tags */}
@@ -252,7 +248,7 @@ const AddProblem = () => {
             placeholder="Tags: array, dp, graph (optional)"
             value={formData.tags}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400"
           />
 
           <textarea
@@ -260,7 +256,7 @@ const AddProblem = () => {
             placeholder="Notes (optional)"
             value={formData.notes}
             onChange={handleInputChange}
-            className="w-full border px-4 py-3 rounded-lg min-h-[80px]"
+            className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg placeholder-gray-400 min-h-[80px]"
             rows={3}
           />
 
