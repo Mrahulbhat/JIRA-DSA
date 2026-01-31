@@ -1,21 +1,21 @@
 import express from "express";
 import passport from "passport";
 import {
-  requestOtp,
-  verifyOtp,
   googleCallback,
   getCurrentUser,
   getSession,
   logout,
   updateProfile,
+  register,
+  login,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// OTP-based Authentication
-router.post("/request-otp", requestOtp);   // send OTP to phone
-router.post("/verify-otp", verifyOtp);     // verify OTP & login/signup
+// Email/Phone + Password auth
+router.post("/register", register);
+router.post("/login", login);
 
 // Google OAuth
 router.get(
@@ -29,7 +29,7 @@ router.get(
   googleCallback
 );
 
-// Check session
+// Session check (token-based)
 router.get("/session", getSession);
 
 // Protected routes
