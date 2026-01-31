@@ -73,7 +73,7 @@ export const getDashboardStats = async (req, res) => {
       { $group: { _id: "$userId", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]);
-    const totalUsers = allCounts.length;
+    const totalUsers = await User.countDocuments();
     const rankIndex = allCounts.findIndex((c) => c._id.toString() === userId.toString());
     const rank = rankIndex === -1 ? totalUsers + 1 : rankIndex + 1;
 
