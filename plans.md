@@ -1,0 +1,1 @@
+BASEURL: https://jira-dsa.vercel.app
