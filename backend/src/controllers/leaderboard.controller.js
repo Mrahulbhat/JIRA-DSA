@@ -2,44 +2,95 @@ import Problem from "../models/problems.model.js";
 import User from "../models/user.model.js";
 
 /**
- * GET /leaderboard - All users sorted by total problems solved (includes users with 0)
+ * GET /dashboard/stats
  */
-export const getLeaderboard = async (req, res) => {
+export const getDashboardStats = async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 50, 100);
-    const skip = parseInt(req.query.skip, 10) || 0;
+    const userId = req.user.userId.toString();
 
-    // Get problem counts per user
-    const counts = await Problem.aggregate([
-      { $group: { _id: "$userId", count: { $sum: 1 }, easy: { $sum: { $cond: [{ $eq: ["$difficulty", "Easy"] }, 1, 0] } }, medium: { $sum: { $cond: [{ $eq: ["$difficulty", "Medium"] }, 1, 0] } }, hard: { $sum: { $cond: [{ $eq: ["$difficulty", "Hard"] }, 1, 0] } } } },
+    // 1️⃣ Fetch all users
+    const users = await User.find()
+      .select("_id weeklyGoal")
+      .lean();
+
+    // 2️⃣ Aggregate problems per user
+    const problemStats = await Problem.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          totalSolved: { $sum: 1 },
+          easyCount: {
+            $sum: { $cond: [{ $eq: ["$difficulty", "Easy"] }, 1, 0] },
+          },
+          mediumCount: {
+            $sum: { $cond: [{ $eq: ["$difficulty", "Medium"] }, 1, 0] },
+          },
+          hardCount: {
+            $sum: { $cond: [{ $eq: ["$difficulty", "Hard"] }, 1, 0] },
+          },
+        },
+      },
     ]);
-    const countMap = Object.fromEntries(counts.map((c) => [c._id.toString(), { count: c.count, easy: c.easy, medium: c.medium, hard: c.hard }]));
 
-    // Get all users and merge with counts
-    const users = await User.find().select("name username").lean();
-    const leaderboardRaw = users.map((u) => {
-      const c = countMap[u._id.toString()] || { count: 0, easy: 0, medium: 0, hard: 0 };
-      return {
-        userId: u._id,
-        name: u.name || "Anonymous",
-        username: u.username || u.name?.toLowerCase()?.replace(/\s+/g, "_") || "user",
-        totalSolved: c.count,
-        easyCount: c.easy,
-        mediumCount: c.medium,
-        hardCount: c.hard,
-      };
+    const statsMap = Object.fromEntries(
+      problemStats.map((p) => [
+        p._id.toString(),
+        {
+          totalSolved: p.totalSolved,
+          easyCount: p.easyCount,
+          mediumCount: p.mediumCount,
+          hardCount: p.hardCount,
+        },
+      ])
+    );
+
+    // 3️⃣ Build full leaderboard (NO pagination)
+    const leaderboard = users
+      .map((u) => ({
+        userId: u._id.toString(),
+        totalSolved: statsMap[u._id.toString()]?.totalSolved || 0,
+      }))
+      .sort((a, b) => b.totalSolved - a.totalSolved);
+
+    // 4️⃣ Rank + totalUsers (same dataset ✅)
+    const totalUsers = leaderboard.length;
+
+    const rankIndex = leaderboard.findIndex(
+      (u) => u.userId === userId
+    );
+
+    const rank = rankIndex === -1 ? totalUsers : rankIndex + 1;
+
+    // 5️⃣ Current user's stats
+    const myStats = statsMap[userId] || {
+      totalSolved: 0,
+      easyCount: 0,
+      mediumCount: 0,
+      hardCount: 0,
+    };
+
+    const me = users.find((u) => u._id.toString() === userId);
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalSolved: myStats.totalSolved,
+        easyCount: myStats.easyCount,
+        mediumCount: myStats.mediumCount,
+        hardCount: myStats.hardCount,
+        weeklyGoal: me?.weeklyGoal || 10,
+        weeklyProgress: myStats.totalSolved, // adjust if you track weekly separately
+        rank,
+        totalUsers,
+        currentStreak: 0,   // plug in if you track streaks
+        longestStreak: 0,   // plug in if you track streaks
+      },
     });
-
-    // Sort by totalSolved desc, then apply pagination
-    leaderboardRaw.sort((a, b) => b.totalSolved - a.totalSolved);
-    const leaderboard = leaderboardRaw.slice(skip, skip + limit).map((entry, i) => ({
-      ...entry,
-      rank: skip + i + 1,
-    }));
-
-    res.status(200).json({ success: true, leaderboard });
   } catch (error) {
-    console.error("getLeaderboard error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("getDashboardStats error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
