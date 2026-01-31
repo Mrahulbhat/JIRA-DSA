@@ -35,7 +35,7 @@ export class LoginPage extends BasePage {
         await this.phoneNumberInputField.fill(commonConstants.phone);
         await this.passwordInputField.fill(commonConstants.password);
         await this.loginButton.click();
-        await waitForApiResponse(this.page, commonConstants.urls.loginApi);
+        await waitForApiResponse(this.page, '/pending-count');
         await expect(this.navbarPage.logoutBtn).toBeVisible();
         // await expect(this.
     }

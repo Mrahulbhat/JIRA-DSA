@@ -7,10 +7,7 @@ const commonConstants = {
     password: 'test123',
 
     urls: {
-        baseURL: 'https://jira-dsa.vercel.app',
-        loginApi: '/api/login',
-        registerApi: '/api/register',
-       
+        baseURL: 'https://jira-dsa.vercel.app',      
     },
 
     pageName: {
