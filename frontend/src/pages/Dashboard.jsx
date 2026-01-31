@@ -155,14 +155,14 @@ const Dashboard = () => {
 
   if (pageLoading) {
     return (
-      <div data-test="loading-screen" className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-black flex justify-center items-center">
+      <div id="loading-screen" className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-black flex justify-center items-center">
         <Loader className="w-12 h-12 animate-spin text-purple-400" />
       </div>
     );
   }
 
   return (
-    <div data-test="dashboard-root" className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-black relative overflow-hidden">
+    <div id="dashboard-root" className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-black relative overflow-hidden">
       {/* Animated Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -175,17 +175,17 @@ const Dashboard = () => {
           
           {/* Header Section */}
           <div className="mb-8">
-            <h1 data-test="header-title" className="text-4xl sm:text-5xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 id="header-title" className="text-4xl sm:text-5xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               DSA Arena
             </h1>
-            <p data-test="header-subtitle" className="text-gray-400 text-lg">Level up together, compete with friends 🚀</p>
+            <p id="header-subtitle" className="text-gray-400 text-lg">Level up together, compete with friends 🚀</p>
           </div>
 
           {/* Streak & Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             
             {/* Current Streak */}
-            <div data-test="current-streak" className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div id="current-streak" className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
@@ -203,7 +203,7 @@ const Dashboard = () => {
             </div>
 
             {/* Total Solved */}
-            <div data-test="total-solved" className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div id="total-solved" className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
@@ -228,7 +228,7 @@ const Dashboard = () => {
             </div>
 
             {/* Weekly Goal */}
-            <div data-test="weekly-goal" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div id="weekly-goal" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
@@ -257,7 +257,7 @@ const Dashboard = () => {
             </div>
 
             {/* Global Rank */}
-            <div data-test="global-rank" className="bg-gradient-to-br from-pink-900/40 to-pink-800/20 border border-pink-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div id="global-rank" className="bg-gradient-to-br from-pink-900/40 to-pink-800/20 border border-pink-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
@@ -278,7 +278,7 @@ const Dashboard = () => {
 
           {/* Problem of the Day */}
           {problemOfTheDay && (
-            <div data-test="problem-of-the-day" className="mb-8 bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl backdrop-blur-sm overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300">
+            <div id="problem-of-the-day" className="mb-8 bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl backdrop-blur-sm overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -300,7 +300,7 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <a 
-                      data-test="solve-now-button"
+                      id="solve-now-button"
                       href={problemOfTheDay.problemLink || "#"}
                       target="_blank"
                       rel="noreferrer"
@@ -338,7 +338,7 @@ const Dashboard = () => {
             
             {/* Friends Activity - Creates FOMO */}
             <div className="lg:col-span-2">
-              <div data-test="community-activity" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
+              <div id="community-activity" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 px-6 py-5 border-b border-gray-700/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -346,7 +346,7 @@ const Dashboard = () => {
                       <h2 className="text-white text-xl font-bold">Community Activity</h2>
                     </div>
                     <button 
-                      data-test="leaderboard-button"
+                      id="leaderboard-button"
                       onClick={() => navigate("/leaderboard")}
                       className="text-purple-400 hover:text-purple-300 text-sm font-semibold flex items-center gap-1"
                     >
@@ -361,7 +361,7 @@ const Dashboard = () => {
                   {feedActivity.map((item) => (
                     <div 
                       key={item.id}
-                      data-test="feed-item"
+                      id="feed-item"
                       className="bg-gradient-to-r from-gray-800/50 to-gray-700/30 rounded-xl p-5 border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
                     >
                       <div className="flex items-start justify-between mb-3">
@@ -392,7 +392,7 @@ const Dashboard = () => {
                   )}
                   <div className="text-center pt-4">
                     <button 
-                      data-test="add-problem-button"
+                      id="add-problem-button"
                       onClick={() => navigate("/problems/add")}
                       className="text-purple-400 hover:text-purple-300 font-semibold text-sm inline-flex items-center gap-2 transition-colors"
                     >
@@ -407,14 +407,14 @@ const Dashboard = () => {
             {/* Quick Actions & Recent Problems */}
             <div className="space-y-6">
               {/* Quick Actions */}
-              <div data-test="quick-actions" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden p-6">
+              <div id="quick-actions" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden p-6">
                 <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                   <Zap className="w-5 h-5 text-yellow-400" />
                   Quick Actions
                 </h3>
                 <div className="space-y-3">
                   <button 
-                    data-test="add-problem-quick"
+                    id="add-problem-quick"
                     onClick={() => navigate('/problems/add')}
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
                   >
@@ -422,7 +422,7 @@ const Dashboard = () => {
                     Add Problem Solved
                   </button>
                   <button 
-                    data-test="view-leaderboard-quick"
+                    id="view-leaderboard-quick"
                     onClick={() => navigate("/leaderboard")}
                     className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
                   >
@@ -430,7 +430,7 @@ const Dashboard = () => {
                     View Leaderboard
                   </button>
                   <button 
-                    data-test="my-challenges-quick"
+                    id="my-challenges-quick"
                     onClick={() => navigate("/challenges")}
                     className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
                   >
@@ -441,7 +441,7 @@ const Dashboard = () => {
               </div>
 
               {/* Recent Problems */}
-              <div data-test="recent-problems" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
+              <div id="recent-problems" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4 border-b border-gray-700/50">
                   <h3 className="text-white font-bold flex items-center gap-2">
                     <Award className="w-5 h-5 text-blue-400" />
@@ -452,7 +452,7 @@ const Dashboard = () => {
                   {recentProblems.map((problem) => (
                     <div 
                       key={problem.id}
-                      data-test="recent-problem-item"
+                      id="recent-problem-item"
                       className="bg-gradient-to-r from-gray-800/50 to-gray-700/30 rounded-lg p-4 border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300"
                     >
                       <div className="flex items-start justify-between mb-2">
@@ -469,15 +469,15 @@ const Dashboard = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-600/30">
-                        <button data-test="like-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
+                        <button id="like-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
                           <ThumbsUp className="w-3 h-3" />
                           <span className="text-xs">{problem.likes}</span>
                         </button>
-                        <button data-test="comment-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
+                        <button id="comment-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
                           <MessageCircle className="w-3 h-3" />
                           <span className="text-xs">{problem.comments}</span>
                         </button>
-                        <button data-test="share-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors ml-auto">
+                        <button id="share-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors ml-auto">
                           <Share2 className="w-3 h-3" />
                           <span className="text-xs">Share</span>
                         </button>
@@ -488,7 +488,7 @@ const Dashboard = () => {
               </div>
 
               {/* Achievements Preview */}
-              <div data-test="latest-achievement" className="bg-gradient-to-br from-yellow-900/40 to-orange-800/20 border border-yellow-500/30 rounded-2xl backdrop-blur-sm overflow-hidden p-6">
+              <div id="latest-achievement" className="bg-gradient-to-br from-yellow-900/40 to-orange-800/20 border border-yellow-500/30 rounded-2xl backdrop-blur-sm overflow-hidden p-6">
                 <h3 className="text-yellow-400 font-bold mb-4 flex items-center gap-2">
                   <Award className="w-5 h-5" />
                   Latest Achievement
