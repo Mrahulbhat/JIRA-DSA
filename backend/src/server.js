@@ -41,7 +41,7 @@ app.use(passport.session());
 
 const allowedOriginStrings = [
   "http://localhost:5173",
-  "https://cashbook-kappa.vercel.app",
+  "https://dsa-tracker-elmd.onrender.com",
 ];
 
 // Add FRONTEND_URL from env if it exists
