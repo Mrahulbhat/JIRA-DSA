@@ -214,7 +214,7 @@ const Dashboard = () => {
                     <Code className="w-5 h-5 text-purple-400" />
                   </div>
                 </div>
-                <p className="text-4xl font-bold text-white mb-1">{stats.totalSolved}</p>
+                <p id="problemsCountValue" className="text-4xl font-bold text-white mb-1">{stats.totalSolved}</p>
                 <div className="flex gap-2 mt-3">
                   <span className="text-xs px-2 py-1 bg-green-500/20 text-green-300 rounded">
                     E: {stats.easyCount}

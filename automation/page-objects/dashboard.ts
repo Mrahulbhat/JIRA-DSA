@@ -23,6 +23,10 @@ export class DashboardPage extends BasePage {
     return this.page.locator('#total-solved');
   }
 
+  get problemsCountValue(): Locator {
+    return this.page.locator('#problemsCountValue');
+  }
+
   get weeklyGoal(): Locator {
     return this.page.locator('#weekly-goal');
   }
