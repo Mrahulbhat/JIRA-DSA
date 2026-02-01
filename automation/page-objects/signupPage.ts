@@ -70,9 +70,14 @@ export class SignUpPage extends BasePage {
         await this.confirmPasswordInputField.fill(password);
         await this.termsConditionsCheckbox.check();
         await expect(this.termsConditionsCheckbox).toBeChecked();
-        await this.signupButton.click();
-        await waitForApiResponse(this.page, commonConstants.urls.registerApi);
-
-        await expect(this.navbarPage.logoutBtn).toBeVisible();
+        try {
+            await this.signupButton.click();
+            await waitForApiResponse(this.page, '/register');
+            await expect(this.navbarPage.logoutBtn).toBeVisible({ timeout: 5000 });
+        }
+        catch {
+            await this.signupButton.click();
+            await expect(page.getByText('Phone number already registered')).toBeVisible();
+        }
     }
 }

@@ -16,7 +16,7 @@ export async function navigateToPage(page: any, pageName: string) {
         case commonConstants.pageName.DASHBOARD:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
             await Promise.all([
-                page.waitForResponse((response: any) => response.url().includes('pending-count') && response.status() === 200, { timeout: 15000 }),
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.fetchCountApi) && response.status() === 200, { timeout: 15000 }),
             ]);
             break;
 

@@ -14,6 +14,7 @@ test.describe.serial('Automation Tests', () => {
             await signupPage.createAccount(page, name, phone, password);
         });
     });
+    
     test.describe('Login Related Tests', () => {
 
         test('Login Functionality @BAT', async ({ loginPage }) => {
@@ -21,26 +22,29 @@ test.describe.serial('Automation Tests', () => {
         });
     });
 
-    test('Validate entire dashboard functionality', async ({ page, dashboardPage }) => {
-        await navigateToPage(page, commonConstants.pageName.DASHBOARD);
-        // ----- HEADER -----
-        await expect(page.getByText('DSA Arena')).toBeVisible();
+    test.describe('Dashboard Related Tests', () => {
 
-        // ----- CARDS -----
-        await expect(dashboardPage.currentStreak).toBeVisible();
-        await expect(dashboardPage.totalSolved).toBeVisible();
-        await expect(dashboardPage.weeklyGoal).toBeVisible();
-        await expect(dashboardPage.globalRank).toBeVisible();
+        test('Validate entire dashboard functionality', async ({ page, dashboardPage,loginPage }) => {
+            await loginPage.loginUser();
+            await navigateToPage(page, commonConstants.pageName.DASHBOARD);
+            // ----- HEADER -----
+            await expect(page.getByText('DSA Arena')).toBeVisible();
 
-        await expect(dashboardPage.currentStreak).not.toHaveText('');
-        await expect(dashboardPage.totalSolved).not.toHaveText('');
+            // ----- CARDS -----
+            await expect(dashboardPage.currentStreak).toBeVisible();
+            await expect(dashboardPage.totalSolved).toBeVisible();
+            await expect(dashboardPage.weeklyGoal).toBeVisible();
+            await expect(dashboardPage.globalRank).toBeVisible();
 
-        // ----- QUICK ACTION BUTTONS -----
-        await expect(dashboardPage.addProblemBtn).toBeVisible();
-        await expect(dashboardPage.leaderboardBtn).toBeVisible();
-        await expect(dashboardPage.myChallengesBtn).toBeVisible();
+            await expect(dashboardPage.currentStreak).not.toHaveText('');
+            await expect(dashboardPage.totalSolved).not.toHaveText('');
+
+            // ----- QUICK ACTION BUTTONS -----
+            await expect(dashboardPage.addProblemBtn).toBeVisible();
+            await expect(dashboardPage.leaderboardBtn).toBeVisible();
+            await expect(dashboardPage.myChallengesBtn).toBeVisible();
+        });
     });
-
 
     test.describe('Delete Account Test', () => {
         test('Delete a account @BAT', async ({ page, loginPage }) => {

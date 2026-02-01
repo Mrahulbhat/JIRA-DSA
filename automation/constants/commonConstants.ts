@@ -6,6 +6,9 @@ const commonConstants = {
     phone:'9876543210',
     password: 'test123',
 
+    //Network intercepts
+    fetchCountApi:'/api/challenges/pending-count',
+
     urls: {
         baseURL: 'https://jira-dsa.vercel.app',      
     },
