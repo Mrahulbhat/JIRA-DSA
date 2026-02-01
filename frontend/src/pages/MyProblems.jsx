@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { axiosInstance } from "../lib/axios";
+import { useAuth } from "../context/AuthContext";
 import {
   Eye,
   Edit,
@@ -14,6 +15,8 @@ import {
 
 const MyProblems = () => {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth(); // get current user
+
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
   const [expandedProblem, setExpandedProblem] = useState(null);
@@ -23,7 +26,13 @@ const MyProblems = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Fetch problems from backend
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false);
+  const [selectedProblem, setSelectedProblem] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [sending, setSending] = useState(false);
+
+  // Fetch problems
   const fetchProblems = async () => {
     try {
       const res = await axiosInstance.get("/problems");
@@ -41,8 +50,39 @@ const MyProblems = () => {
     fetchProblems();
   }, []);
 
+  const handleSendChallenge = async () => {
+    if (!selectedUser || !selectedProblem) return;
+
+    try {
+      setSending(true);
+
+      const res = await axiosInstance.post("/challenges", {
+        challengeeId: selectedUser,
+        problem: {
+          name: selectedProblem.name,
+          difficulty: selectedProblem.difficulty,
+          topic: selectedProblem.topic,
+          source: selectedProblem.source,
+          problemLink: selectedProblem.problemLink,
+          tags: selectedProblem.tags || [],
+        },
+      });
+
+      if (res.data?.success) {
+        setChallengeModalOpen(false);
+        setSelectedUser(null);
+        setSelectedProblem(null);
+      }
+    } catch (err) {
+      console.error("Failed to send challenge", err.response?.data || err);
+    } finally {
+      setSending(false);
+    }
+  };
+
   const getDifficultyStyle = (d) => {
-    if (d === "Easy") return "text-green-400 bg-green-500/20 border-green-500/40";
+    if (d === "Easy")
+      return "text-green-400 bg-green-500/20 border-green-500/40";
     if (d === "Medium")
       return "text-yellow-400 bg-yellow-500/20 border-yellow-500/40";
     return "text-red-400 bg-red-500/20 border-red-500/40";
@@ -54,7 +94,8 @@ const MyProblems = () => {
       p.topic.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchDiff =
-      selectedDifficulty === "all" || p.difficulty.toLowerCase() === selectedDifficulty;
+      selectedDifficulty === "all" ||
+      p.difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
 
     const matchCat =
       selectedCategory === "all" || p.topic === selectedCategory;
@@ -131,8 +172,8 @@ const MyProblems = () => {
               className="bg-slate-800 border border-slate-600 rounded-lg p-2"
             >
               <option value="all">All Topics</option>
-              {[...new Set(problems.map((p) => p.topic))].map((topic) => (
-                <option key={topic} value={topic}>
+              {[...new Set(problems.map((p) => p.topic))].map((topic, idx) => (
+                <option key={`topic-${idx}`} value={topic}>
                   {topic}
                 </option>
               ))}
@@ -141,10 +182,10 @@ const MyProblems = () => {
         )}
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="overflow-x-auto border border-slate-700 rounded-xl">
         <table className="w-full text-sm">
-          <thead className="bg-slate-900 sticky top-0">
+          <thead className="bg-slate-900">
             <tr className="text-gray-400 border-b border-slate-700">
               <th className="p-3 text-left">Difficulty</th>
               <th className="p-3 text-left">Title</th>
@@ -153,6 +194,7 @@ const MyProblems = () => {
               <th className="p-3 text-left">Tags</th>
               <th className="p-3 text-center">Solved</th>
               <th className="p-3 text-center">Actions</th>
+              <th className="p-3 text-center">Challenge</th>
             </tr>
           </thead>
 
@@ -174,15 +216,17 @@ const MyProblems = () => {
                   <td className="p-3 text-slate-300">{p.source || "-"}</td>
                   <td className="p-3">
                     <div className="flex gap-2 flex-wrap">
-                      {(p.tags || []).map((t) => (
+                      {(p.tags || []).map((t, idx) => (
                         <span
-                          key={t}
+                          key={`${p._id}-tag-${idx}`}
                           className="px-2 py-0.5 text-xs rounded bg-purple-500/20 text-purple-300 border border-purple-500/30"
                         >
                           {t}
                         </span>
                       ))}
-                      {(p.tags || []).length === 0 && <span className="text-slate-500">-</span>}
+                      {(p.tags || []).length === 0 && (
+                        <span className="text-slate-500">-</span>
+                      )}
                     </div>
                   </td>
                   <td className="p-3 text-center text-gray-400">
@@ -193,16 +237,16 @@ const MyProblems = () => {
                       <Link
                         to={`/problems/edit/${p._id}`}
                         className="p-2 bg-blue-600/20 rounded hover:bg-blue-600/30"
-                        title="Edit problem"
                       >
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button
                         onClick={() =>
-                          setExpandedProblem(expandedProblem === p._id ? null : p._id)
+                          setExpandedProblem(
+                            expandedProblem === p._id ? null : p._id
+                          )
                         }
                         className="p-2 bg-purple-600/20 rounded hover:bg-purple-600/30"
-                        title="Notes & solution"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
@@ -211,24 +255,61 @@ const MyProblems = () => {
                         target="_blank"
                         rel="noreferrer"
                         className="p-2 bg-orange-600/20 rounded hover:bg-orange-600/30"
-                        title="Open problem"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
                   </td>
+
+                  {/* Challenge column */}
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={async () => {
+                        setSelectedProblem(p);
+                        setSelectedUser(null);
+
+                        // fetch users if not already fetched
+                        if (allUsers.length === 0) {
+                          try {
+                            const res = await axiosInstance.get("/users");
+                            if (res.data?.success) setAllUsers(res.data.users);
+                          } catch (err) {
+                            console.error("Failed to fetch users:", err);
+                          }
+                        }
+
+                        setChallengeModalOpen(true);
+                      }}
+                      className="px-3 py-1 text-xs rounded bg-green-600/20 text-green-400 border border-green-600/40 hover:bg-green-600/30"
+                    >
+                      Challenge
+                    </button>
+                  </td>
+
                 </tr>
 
                 {expandedProblem === p._id && (
                   <tr className="bg-slate-800/80">
-                    <td colSpan={7} className="p-4">
-                      {p.notes && <p className="text-slate-300 mb-2 whitespace-pre-wrap">{p.notes}</p>}
+                    <td colSpan={8} className="p-4">
+                      {p.notes && (
+                        <p className="text-slate-300 mb-2 whitespace-pre-wrap">
+                          {p.notes}
+                        </p>
+                      )}
+
                       {p.githubLink ? (
-                        <a href={p.githubLink} target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 text-sm inline-flex items-center gap-1">
+                        <a
+                          href={p.githubLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-purple-400 hover:text-purple-300 text-sm inline-flex items-center gap-1"
+                        >
                           <ExternalLink className="w-4 h-4" /> View solution
                         </a>
                       ) : !p.notes && (
-                        <p className="text-slate-500 text-sm">No notes or solution link.</p>
+                        <p className="text-slate-500 text-sm">
+                          No notes or solution link.
+                        </p>
                       )}
                     </td>
                   </tr>
@@ -238,6 +319,54 @@ const MyProblems = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Challenge Modal */}
+      {challengeModalOpen && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md p-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Challenge a Friend
+            </h2>
+
+            <p className="text-sm text-slate-400 mb-3">
+              Problem:{" "}
+              <span className="text-white">{selectedProblem?.name}</span>
+            </p>
+            <select
+              value={selectedUser || ""}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              className="w-full p-2 bg-slate-800 border border-slate-600 rounded"
+            >
+              <option value="">Select user</option>
+              {allUsers.length > 0 &&
+                allUsers
+                  .filter((u) => currentUser?.id && u.id !== currentUser.id)
+                  .map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name || u.username}
+                    </option>
+                  ))}
+            </select>
+
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setChallengeModalOpen(false)}
+                className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleSendChallenge}
+                disabled={!selectedUser || sending}
+                className="px-4 py-2 rounded bg-green-600 hover:bg-green-500 disabled:opacity-50"
+              >
+                {sending ? "Sending..." : "Send Challenge"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
