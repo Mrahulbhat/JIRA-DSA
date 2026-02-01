@@ -57,11 +57,6 @@ export class MyProblemsPage extends BasePage {
 
     async addProblem(page: Page, title: string, difficulty: string, topic: string, platform: string,problemLink:string,solutionLink:string,tags:string,notes:string) {
 
-        //navigate to myproblems page
-        await this.myProblemsSidebarBtn.click();
-        await waitForApiResponse(page, commonConstants.fetchProblemsApi);
-        await expect(this.addProblemBtn).toBeVisible();
-
         // navigate to add problem page
         await this.addProblemBtn.click();
         await expect(this.problemLinkInputField).toBeVisible();
@@ -73,6 +68,9 @@ export class MyProblemsPage extends BasePage {
         await this.solutionInputField.fill(solutionLink);
         await this.tagsInputField.fill(tags);
         await this.notesInputField.fill(notes);
+        await this.submitBtn.click();
+        await expect(this.page.getByText(commonConstants.toastMessages.PROBLEM_ADDED_SUCCESSFULLY)).toBeVisible();
+        await waitForApiResponse(page,commonConstants.fetchProblemsApi);
     }
 
 }

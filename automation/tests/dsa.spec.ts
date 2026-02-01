@@ -47,12 +47,13 @@ test.describe('My Problems Page related Tests', () => {
         const problemCount = await dashboardPage.problemsCountValue.innerText();
         console.log(problemCount);
 
-        const problems = commonConstants.problemsToAdd;
+         //navigate to myproblems page
+        await myProblemsPage.myProblemsSidebarBtn.click();
+        await waitForApiResponse(page, commonConstants.fetchProblemsApi);
+        await expect(myProblemsPage.addProblemBtn).toBeVisible();
 
-        for (const p of problems) {
+        for (const p of commonConstants.problemsToAdd) {
             await myProblemsPage.addProblem(page, p.title, p.difficulty, p.topic, p.platform, p.problemLink, p.solutionLink, p.tags, p.notes);
         }
     });
-
-
 })

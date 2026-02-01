@@ -9,6 +9,7 @@ const commonConstants = {
     //Network intercepts
     fetchCountApi: '/api/challenges/pending-count',
     fetchProblemsApi: '/api/problems',
+    addProblemApi:'/api/problems/add',
 
     urls: {
         baseURL: 'https://jira-dsa.vercel.app',
@@ -21,7 +22,7 @@ const commonConstants = {
     },
 
     toastMessages: {
-        TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction added successfully',
+        PROBLEM_ADDED_SUCCESSFULLY: 'Problem added successfully',
 
     },
 
