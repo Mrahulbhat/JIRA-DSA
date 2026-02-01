@@ -63,6 +63,7 @@ test.describe('My Problems Page related Tests', () => {
         //store present count of problems solved from dashboard
         await expect(dashboardPage.totalSolved).toBeVisible();
         const finalCount = await dashboardPage.problemsCountValue.innerText();
+        console.log(finalCount);
         expect(finalCount === problemCount+commonConstants.problemsToAdd.length);
     });
 })
