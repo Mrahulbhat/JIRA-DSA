@@ -4,6 +4,7 @@ import { DashboardPage } from '../page-objects/dashboard';
 import { NavbarPage } from '../page-objects/navbar';
 import { LoginPage } from '../page-objects/login-page';
 import { SignUpPage } from '../page-objects/signupPage';
+import { MyProblemsPage } from '../page-objects/problems';
 
 type fixtures = {
     basePage: BasePage;
@@ -11,6 +12,7 @@ type fixtures = {
     loginPage: LoginPage;
     signupPage: SignUpPage;
     navbarPage: NavbarPage;
+    myProblemsPage:MyProblemsPage;
 }
 
 export const test = base.extend<fixtures>({
@@ -35,4 +37,8 @@ export const test = base.extend<fixtures>({
     signupPage: async ({ page, navbarPage }, use) => {
         await use(new SignUpPage(page, navbarPage));
     },
+     myProblemsPage: async ({ page }, use) => {
+        await use(new MyProblemsPage(page));
+    },
+
 });

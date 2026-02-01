@@ -2,6 +2,8 @@
 
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
+import { waitForApiResponse } from './common-functions';
+import commonConstants from '../constants/commonConstants';
 
 export class MyProblemsPage extends BasePage {
     readonly page: Page;
@@ -14,7 +16,7 @@ export class MyProblemsPage extends BasePage {
     get addProblemBtn(): Locator {
         return this.page.locator('#addProblemBtn');
     }
-    get ProblemNameInputField(): Locator {
+    get problemNameInputField(): Locator {
         return this.page.locator('#ProblemNameInputField');
     }
     get difficultyDropdown(): Locator {
@@ -32,6 +34,9 @@ export class MyProblemsPage extends BasePage {
     get topicDropdown(): Locator {
         return this.page.locator('#topicDropdown');
     }
+    get platformName(): Locator {
+        return this.page.locator('#platformName');
+    }
     get problemLinkInputField(): Locator {
         return this.page.locator('#problemLinkInputField');
     }
@@ -41,18 +46,30 @@ export class MyProblemsPage extends BasePage {
     get notesInputField(): Locator {
         return this.page.locator('#notesInputField');
     }
-    get SubmitBtn(): Locator {
+    get submitBtn(): Locator {
         return this.page.locator('#SubmitBtn');
     }
     get solutionInputField(): Locator {
         return this.page.locator('#solutionInputField');
     }
 
-
     //have added locator to topic dropdwons dynamic
 
-    //  async addProblems(page: Page, problems: string[]) {
-    //     await 
-    // }
+    async addProblem(page: Page, title: string, difficulty: string, topic: string, platform: string,problemLink:string,solutionLink:string,tags:string,notes:string) {
+
+        //navigate to myproblems page
+        await this.myProblemsSidebarBtn.click();
+        await waitForApiResponse(page, commonConstants.fetchProblemsApi);
+        await expect(this.addProblemBtn).toBeVisible();
+
+        await this.problemNameInputField.fill(title);
+        await this.difficultyDropdown.selectOption(difficulty);
+        await this.topicDropdown.selectOption(topic);
+        await this.platformName.fill(platform);
+        await this.problemLinkInputField.fill(problemLink);
+        await this.solutionInputField.fill(solutionLink);
+        await this.tagsInputField.fill(tags);
+        await this.notesInputField.fill(notes);
+    }
 
 }

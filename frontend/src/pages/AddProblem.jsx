@@ -217,6 +217,7 @@ const AddProblem = () => {
           </div>
 
           <input
+          id="platformName"
             type="text"
             name="source"
             placeholder="LeetCode / Codeforces / GFG"

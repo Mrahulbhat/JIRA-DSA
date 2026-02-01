@@ -40,17 +40,15 @@ test.describe('My Problems Page related Tests', () => {
         await expect(page.getByText('DSA Arena')).toBeVisible();
     });
 
-    test('Verify if a user can Add problems solved by him', async ({ page, loginPage, dashboardPage }) => {
+    test('Verify if a user can Add problems solved by him', async ({ page, myProblemsPage, dashboardPage }) => {
 
         //store initial count of problems solved from dashboard
         await expect(dashboardPage.totalSolved).toBeVisible();
         const problemCount = await dashboardPage.problemsCountValue.innerText();
         console.log(problemCount);
 
-        //navigate to myproblems page
-        await dashboardPage.myProblemsSidebarBtn.click();
-        await waitForApiResponse(page,commonConstants.fetchProblemsApi);
-        await expect()
+
+        //
 
         //
 
