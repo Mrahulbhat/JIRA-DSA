@@ -1,7 +1,7 @@
 import { test } from '../fixtures/test-base.ts';
 import { expect } from '@playwright/test';
 import commonConstants from '../constants/commonConstants.ts';
-import { waitForApiResponse } from '../page-objects/common-functions.ts';
+import { generateRandomPrefix, waitForApiResponse } from '../page-objects/common-functions.ts';
 
 test.describe('Dashboard Related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
@@ -47,11 +47,11 @@ test.describe('My Problems Page related Tests', () => {
         const problemCount = await dashboardPage.problemsCountValue.innerText();
         console.log(problemCount);
 
+        const problems = commonConstants.problemsToAdd;
 
-        //
-
-        //
-
+        for (const p of problems) {
+            await myProblemsPage.addProblem(page, p.title, p.difficulty, p.topic, p.platform, p.problemLink, p.solutionLink, p.tags, p.notes);
+        }
     });
 
 

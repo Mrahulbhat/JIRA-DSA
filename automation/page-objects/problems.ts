@@ -62,6 +62,9 @@ export class MyProblemsPage extends BasePage {
         await waitForApiResponse(page, commonConstants.fetchProblemsApi);
         await expect(this.addProblemBtn).toBeVisible();
 
+        // navigate to add problem page
+        await this.addProblemBtn.click();
+        await expect(this.problemLinkInputField).toBeVisible();
         await this.problemNameInputField.fill(title);
         await this.difficultyDropdown.selectOption(difficulty);
         await this.topicDropdown.selectOption(topic);
