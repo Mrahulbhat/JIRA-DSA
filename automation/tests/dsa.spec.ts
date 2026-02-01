@@ -47,13 +47,22 @@ test.describe('My Problems Page related Tests', () => {
         const problemCount = await dashboardPage.problemsCountValue.innerText();
         console.log(problemCount);
 
-         //navigate to myproblems page
+        //navigate to myproblems page
         await myProblemsPage.myProblemsSidebarBtn.click();
         await waitForApiResponse(page, commonConstants.fetchProblemsApi);
         await expect(myProblemsPage.addProblemBtn).toBeVisible();
 
+        // Add many problems
         for (const p of commonConstants.problemsToAdd) {
             await myProblemsPage.addProblem(page, p.title, p.difficulty, p.topic, p.platform, p.problemLink, p.solutionLink, p.tags, p.notes);
         }
+
+        await dashboardPage.dashboardSidebarBtn.click();
+        await waitForApiResponse(page, commonConstants.fetchProblemsApi);
+
+        //store present count of problems solved from dashboard
+        await expect(dashboardPage.totalSolved).toBeVisible();
+        const finalCount = await dashboardPage.problemsCountValue.innerText();
+        expect(finalCount === problemCount+commonConstants.problemsToAdd.length);
     });
 })
