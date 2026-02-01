@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { axiosInstance } from "../lib/axios";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import {
   Eye,
   Edit,
@@ -51,34 +52,38 @@ const MyProblems = () => {
   }, []);
 
   const handleSendChallenge = async () => {
-    if (!selectedUser || !selectedProblem) return;
+  if (!selectedUser || !selectedProblem) return;
 
-    try {
-      setSending(true);
+  try {
+    setSending(true);
 
-      const res = await axiosInstance.post("/challenges", {
-        challengeeId: selectedUser,
-        problem: {
-          name: selectedProblem.name,
-          difficulty: selectedProblem.difficulty,
-          topic: selectedProblem.topic,
-          source: selectedProblem.source,
-          problemLink: selectedProblem.problemLink,
-          tags: selectedProblem.tags || [],
-        },
-      });
+    const res = await axiosInstance.post("/challenges", {
+      challengeeId: selectedUser,
+      problem: {
+        name: selectedProblem.name,
+        difficulty: selectedProblem.difficulty,
+        topic: selectedProblem.topic,
+        source: selectedProblem.source,
+        problemLink: selectedProblem.problemLink,
+        tags: selectedProblem.tags || [],
+      },
+    });
 
-      if (res.data?.success) {
-        setChallengeModalOpen(false);
-        setSelectedUser(null);
-        setSelectedProblem(null);
-      }
-    } catch (err) {
-      console.error("Failed to send challenge", err.response?.data || err);
-    } finally {
-      setSending(false);
+    if (res.data?.success) {
+      toast.success("Challenge sent successfully 🚀");
+
+      setChallengeModalOpen(false);
+      setSelectedUser(null);
+      setSelectedProblem(null);
     }
-  };
+  } catch (err) {
+    toast.error("Failed to send challenge");
+    console.error("Failed to send challenge", err.response?.data || err);
+  } finally {
+    setSending(false);
+  }
+};
+
 
   const getDifficultyStyle = (d) => {
     if (d === "Easy")
