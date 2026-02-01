@@ -12,6 +12,7 @@ import SignupPage from "./pages/SignupPage";
 import MyProblems from "./pages/MyProblems";
 import Leaderboard from "./pages/Leaderboard";
 import Challenges from "./pages/Challenges";
+import Settings from "./pages/Settings";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
@@ -113,6 +114,15 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <AddProblem />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               }
             />

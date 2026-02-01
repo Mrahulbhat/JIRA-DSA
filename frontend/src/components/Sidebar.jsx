@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, TrendingUp, Trophy, Target, Home } from "lucide-react";
+import { Menu, X, TrendingUp, Trophy, Target, Home, Settings } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 
 const Sidebar = () => {
@@ -28,6 +28,7 @@ const Sidebar = () => {
         { name: "My Problems", icon: TrendingUp, path: "/myProblems", id: "myProblems" },
         { name: "Leaderboard", icon: Trophy, path: "/leaderboard", id: "leaderboard" },
         { name: "Challenges", icon: Target, path: "/challenges", id: "challenges", badge: pendingChallenges },
+        { name: "Settings", icon: Settings, path: "/settings", id: "settings" }
     ];
 
     const handleNavigation = (path) => {
@@ -68,8 +69,8 @@ const Sidebar = () => {
                                 key={tab.id}
                                 onClick={() => handleNavigation(tab.path)}
                                 className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
-                                        ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25 scale-105"
-                                        : "text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-1"
+                                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25 scale-105"
+                                    : "text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-1"
                                     }`}
                             >
                                 <div className="flex items-center gap-3 min-w-0">

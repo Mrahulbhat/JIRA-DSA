@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import Problem from "../models/problems.model.js";
+import Challenge from "../models/challenge.model.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -96,6 +98,19 @@ userSchema.pre("save", async function () {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
+userSchema.pre("findOneAndDelete", async function () {
+  const userId = this.getQuery()._id;
+
+  if (!userId) return;
+
+  await Problem.deleteMany({ userId });
+
+  await Challenge.deleteMany({
+    $or: [{ creator: userId }, { opponent: userId }],
+  });
+});
+
 
 // Compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {

@@ -59,3 +59,24 @@ export const searchUsers = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// DELETE MY ACCOUNT
+export const deleteMyAccount = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Account and all related data deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to delete account",
+    });
+  }
+};
+
+
