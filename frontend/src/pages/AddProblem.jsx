@@ -162,6 +162,7 @@ const AddProblem = () => {
   return (
     <div className="min-h-screen bg-black p-6">
       <button
+      id="backBtn"
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 text-white"
       >
@@ -175,6 +176,7 @@ const AddProblem = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <input
+          id="ProblemNameInputField"
             type="text"
             name="name"
             placeholder="Problem name"
@@ -186,17 +188,19 @@ const AddProblem = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <select
+            id="difficultyDropdown"
               name="difficulty"
               value={formData.difficulty}
               onChange={handleInputChange}
               className="bg-gray-800 text-white border border-gray-700 px-4 py-3 rounded-lg"
             >
-              <option>Easy</option>
-              <option>Medium</option>
-              <option>Hard</option>
+              <option id="easy">Easy</option>
+              <option id="medium">Medium</option>
+              <option id="hard">Hard</option>
             </select>
 
             <select
+            id="topicDropdown"
               name="topic"
               value={formData.topic}
               onChange={handleInputChange}
@@ -205,7 +209,7 @@ const AddProblem = () => {
             >
               <option value="">Select topic</option>
               {TOPIC_OPTIONS.map((topic) => (
-                <option key={topic} value={topic}>
+                <option id={`{topic}Option`} key={topic} value={topic}>
                   {topic}
                 </option>
               ))}
@@ -223,6 +227,7 @@ const AddProblem = () => {
           />
 
           <input
+          id="problemLinkInputField"
             type="url"
             name="problemLink"
             placeholder="Problem link"
@@ -233,6 +238,7 @@ const AddProblem = () => {
           />
 
           <input
+          id="solutionInputField"
             type="url"
             name="githubLink"
             placeholder="GitHub / solution link (optional)"
@@ -242,6 +248,7 @@ const AddProblem = () => {
           />
 
           <input
+          id="tagsInputField"
             type="text"
             name="tags"
             placeholder="Tags: array, dp, graph"
@@ -251,6 +258,7 @@ const AddProblem = () => {
           />
 
           <textarea
+          id="notesInputField"
             name="notes"
             placeholder="Notes (optional)"
             value={formData.notes}
@@ -259,6 +267,7 @@ const AddProblem = () => {
           />
 
           <button
+          id="SubmitBtn"
             type="submit"
             disabled={loading}
             className="w-full bg-purple-600 text-white py-3 rounded-lg flex items-center justify-center gap-2"

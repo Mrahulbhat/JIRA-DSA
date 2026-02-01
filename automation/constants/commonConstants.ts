@@ -8,6 +8,7 @@ const commonConstants = {
 
     //Network intercepts
     fetchCountApi:'/api/challenges/pending-count',
+    fetchProblemsApi:'/api/problems',
 
     urls: {
         baseURL: 'https://jira-dsa.vercel.app',      

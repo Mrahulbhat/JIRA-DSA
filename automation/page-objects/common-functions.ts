@@ -8,7 +8,7 @@ export async function navigateToPage(page: any, pageName: string) {
             await page.goto(commonConstants.urls.baseURL);
             break;
 
-        case commonConstants.pageName.SIGNUP:    
+        case commonConstants.pageName.SIGNUP:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.SIGNUP}`);
             await expect(page).toHaveURL(`${commonConstants.urls.baseURL}/${commonConstants.pageName.SIGNUP}`);
             break;

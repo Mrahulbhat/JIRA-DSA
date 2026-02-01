@@ -128,6 +128,7 @@ const MyProblems = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My DSA Problems</h1>
         <button
+        id="addProblemBtn"
           onClick={() => navigate("/problems/add")}
           className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500"
         >
@@ -149,6 +150,7 @@ const MyProblems = () => {
           </div>
 
           <button
+          id="filterBtn"
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg"
           >
@@ -246,6 +248,7 @@ const MyProblems = () => {
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button
+                      id="expandBtn"
                         onClick={() =>
                           setExpandedProblem(
                             expandedProblem === p._id ? null : p._id
