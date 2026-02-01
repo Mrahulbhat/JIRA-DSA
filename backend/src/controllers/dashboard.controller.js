@@ -117,6 +117,9 @@ export const getFeed = async (req, res) => {
       difficulty: p.difficulty,
       topic: p.topic,
       solvedAt: p.solvedAt || p.createdAt,
+      problemLink: p.problemLink || null,
+      githubLink: p.githubLink || null,
+      notes: p.notes || null,
       user: p.userId
         ? { id: p.userId._id, name: p.userId.name || "Anonymous", username: p.userId.username || p.userId.name?.toLowerCase().replace(/\s+/g, "_") || "user" }
         : { id: null, name: "Anonymous", username: "anonymous" },

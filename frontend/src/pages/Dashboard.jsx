@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Plus, 
-  Loader, 
-  Flame, 
-  Trophy, 
-  Target, 
+import {
+  Plus,
+  Loader,
+  Flame,
+  Trophy,
+  Target,
   TrendingUp,
   Users,
   Award,
@@ -97,6 +97,8 @@ const Dashboard = () => {
             lastProblem: item.name,
             difficulty: item.difficulty,
             timeAgo: timeAgo(item.solvedAt),
+            problemLink: item.problemLink,
+            githubLink: item.githubLink,
           }))
         );
       }
@@ -138,7 +140,7 @@ const Dashboard = () => {
   };
 
   const getDifficultyColor = (difficulty) => {
-    switch(difficulty.toLowerCase()) {
+    switch (difficulty.toLowerCase()) {
       case 'easy': return 'text-green-600 bg-green-100';
       case 'medium': return 'text-yellow-600 bg-yellow-100';
       case 'hard': return 'text-red-600 bg-red-100';
@@ -172,7 +174,7 @@ const Dashboard = () => {
 
       <div className="relative z-10 p-4 sm:p-8 pb-20">
         <div className="max-w-7xl mx-auto">
-          
+
           {/* Header Section */}
           <div className="mb-8">
             <h1 id="header-title" className="text-4xl sm:text-5xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -183,7 +185,7 @@ const Dashboard = () => {
 
           {/* Streak & Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            
+
             {/* Current Streak */}
             <div id="current-streak" className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/30 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
@@ -242,7 +244,7 @@ const Dashboard = () => {
                 </p>
                 <div className="mt-3">
                   <div className="w-full bg-blue-900/50 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${(stats.weeklyProgress / stats.weeklyGoal) * 100}%` }}
                     ></div>
@@ -299,7 +301,7 @@ const Dashboard = () => {
                       <span className="text-green-400 font-semibold">Solved</span>
                     </div>
                   ) : (
-                    <a 
+                    <a
                       id="solve-now-button"
                       href={problemOfTheDay.problemLink || "#"}
                       target="_blank"
@@ -311,7 +313,7 @@ const Dashboard = () => {
                     </a>
                   )}
                 </div>
-                
+
                 <div className="bg-black/30 rounded-xl p-5">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-xl font-bold text-white">{problemOfTheDay.title}</h3>
@@ -335,7 +337,7 @@ const Dashboard = () => {
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* Friends Activity - Creates FOMO */}
             <div className="lg:col-span-2">
               <div id="community-activity" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
@@ -345,7 +347,7 @@ const Dashboard = () => {
                       <Users className="w-6 h-6 text-purple-400" />
                       <h2 className="text-white text-xl font-bold">Community Activity</h2>
                     </div>
-                    <button 
+                    <button
                       id="leaderboard-button"
                       onClick={() => navigate("/leaderboard")}
                       className="text-purple-400 hover:text-purple-300 text-sm font-semibold flex items-center gap-1"
@@ -359,7 +361,7 @@ const Dashboard = () => {
 
                 <div className="p-6 space-y-4">
                   {feedActivity.map((item) => (
-                    <div 
+                    <div
                       key={item.id}
                       id="feed-item"
                       className="bg-gradient-to-r from-gray-800/50 to-gray-700/30 rounded-xl p-5 border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
@@ -370,12 +372,12 @@ const Dashboard = () => {
                             {item.avatar}
                           </div>
                           <div>
-                            <h3 className="text-white font-semibold">{item.name}</h3>
-                            <p className="text-gray-400 text-sm">solved a problem</p>
+                            <h3 className="text-white font-semibold">{item.name} <span className="text-gray-400 text-sm">solved a problem</span></h3>
                           </div>
                         </div>
                       </div>
                       <div className="bg-black/30 rounded-lg p-3 border border-gray-600/30">
+
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-white font-medium text-sm">{item.lastProblem}</p>
                           <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(item.difficulty)}`}>
@@ -383,7 +385,31 @@ const Dashboard = () => {
                           </span>
                         </div>
                         <p className="text-gray-500 text-xs">{item.timeAgo}</p>
+                         <div className="flex items-center gap-3 mt-3">
+                        {item.problemLink && (
+                          <a
+                            href={item.problemLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs px-3 py-1 rounded bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30"
+                          >
+                            Lets Solve
+                          </a>
+
+                        )}
+                        {item.githubLink && (
+                          <a
+                            href={item.githubLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs px-3 py-1 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30"
+                          >
+                            View Solution 
+                          </a>
+                        )}
                       </div>
+                      </div>
+                     
                     </div>
                   ))}
 
@@ -391,7 +417,7 @@ const Dashboard = () => {
                     <p className="text-center text-gray-500 py-4">No activity yet. Add a problem to get started!</p>
                   )}
                   <div className="text-center pt-4">
-                    <button 
+                    <button
                       id="add-problem-button"
                       onClick={() => navigate("/problems/add")}
                       className="text-purple-400 hover:text-purple-300 font-semibold text-sm inline-flex items-center gap-2 transition-colors"
@@ -413,7 +439,7 @@ const Dashboard = () => {
                   Quick Actions
                 </h3>
                 <div className="space-y-3">
-                  <button 
+                  <button
                     id="add-problem-quick"
                     onClick={() => navigate('/problems/add')}
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
@@ -421,7 +447,7 @@ const Dashboard = () => {
                     <Plus className="w-5 h-5" />
                     Add Problem Solved
                   </button>
-                  <button 
+                  <button
                     id="view-leaderboard-quick"
                     onClick={() => navigate("/leaderboard")}
                     className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
@@ -429,7 +455,7 @@ const Dashboard = () => {
                     <Trophy className="w-5 h-5" />
                     View Leaderboard
                   </button>
-                  <button 
+                  <button
                     id="my-challenges-quick"
                     onClick={() => navigate("/challenges")}
                     className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
@@ -437,53 +463,6 @@ const Dashboard = () => {
                     <Target className="w-5 h-5" />
                     My Challenges
                   </button>
-                </div>
-              </div>
-
-              {/* Recent Problems */}
-              <div id="recent-problems" className="bg-gradient-to-br from-gray-900/60 to-gray-800/40 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4 border-b border-gray-700/50">
-                  <h3 className="text-white font-bold flex items-center gap-2">
-                    <Award className="w-5 h-5 text-blue-400" />
-                    Your Recent Solves
-                  </h3>
-                </div>
-                <div className="p-4 space-y-3">
-                  {recentProblems.map((problem) => (
-                    <div 
-                      key={problem.id}
-                      id="recent-problem-item"
-                      className="bg-gradient-to-r from-gray-800/50 to-gray-700/30 rounded-lg p-4 border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-white font-medium text-sm">{problem.title}</h4>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(problem.difficulty)}`}>
-                          {problem.difficulty}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-gray-400">
-                        <span>{problem.category}</span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {problem.timeSpent}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-600/30">
-                        <button id="like-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
-                          <ThumbsUp className="w-3 h-3" />
-                          <span className="text-xs">{problem.likes}</span>
-                        </button>
-                        <button id="comment-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors">
-                          <MessageCircle className="w-3 h-3" />
-                          <span className="text-xs">{problem.comments}</span>
-                        </button>
-                        <button id="share-button" className="flex items-center gap-1 text-gray-400 hover:text-purple-400 transition-colors ml-auto">
-                          <Share2 className="w-3 h-3" />
-                          <span className="text-xs">Share</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
 
