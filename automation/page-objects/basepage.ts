@@ -9,4 +9,22 @@ export class BasePage {
         this.page = newPage;
     }
 
+    // Sidebar Buttons
+    get dashboardSidebarBtn(): Locator {
+        return this.page.locator('#dashboard');
+    }
+    get settingsSidebarBtn(): Locator {
+        return this.page.locator('#settings');
+    }
+    get deleteMyAccountBtn(): Locator {
+        return this.page.locator('#deleteMyAccountBtn');
+    }
+    get cancelDeleteButton(): Locator {
+        return this.page.locator('#cancelDeleteButton');
+    } 
+    get confirmDeleteButton(): Locator {
+        return this.page.locator('#confirmDeleteButton');
+    }
+
+
 }

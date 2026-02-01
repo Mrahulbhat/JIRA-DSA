@@ -63,6 +63,7 @@ const Settings = () => {
                   This will permanently delete your account and all associated data.
                 </p>
                 <button
+                id="deleteMyAccountBtn"
                   onClick={() => setConfirmType("account")}
                   className="mt-4 px-4 py-2 rounded-lg bg-red-600/20 text-red-400 border border-red-600/40 hover:bg-red-600/30"
                 >
@@ -91,6 +92,7 @@ const Settings = () => {
 
             <div className="flex justify-end gap-3">
               <button
+              id="cancelDeleteButton"
                 onClick={() => setConfirmType(null)}
                 className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600"
               >
@@ -98,6 +100,7 @@ const Settings = () => {
               </button>
 
               <button
+              id="confirmDeleteButton"
                 disabled={loading}
                 onClick={
                   confirmType === "account"
