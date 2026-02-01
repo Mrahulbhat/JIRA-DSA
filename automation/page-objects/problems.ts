@@ -71,6 +71,7 @@ export class MyProblemsPage extends BasePage {
         await this.submitBtn.click();
         await expect(this.page.getByText(commonConstants.toastMessages.PROBLEM_ADDED_SUCCESSFULLY)).toBeVisible();
         await waitForApiResponse(page,commonConstants.fetchProblemsApi);
+        await page.waitForTimeout(3000);
     }
 
 }
