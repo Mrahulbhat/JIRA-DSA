@@ -16,7 +16,7 @@ import {
 
 const MyProblems = () => {
   const navigate = useNavigate();
-  const { user: currentUser } = useAuth(); // get current user
+  const { user: currentUser } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
@@ -32,6 +32,15 @@ const MyProblems = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [sending, setSending] = useState(false);
+
+  // Helper to capitalize each word
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   // Fetch problems
   const fetchProblems = async () => {
@@ -52,38 +61,37 @@ const MyProblems = () => {
   }, []);
 
   const handleSendChallenge = async () => {
-  if (!selectedUser || !selectedProblem) return;
+    if (!selectedUser || !selectedProblem) return;
 
-  try {
-    setSending(true);
+    try {
+      setSending(true);
 
-    const res = await axiosInstance.post("/challenges", {
-      challengeeId: selectedUser,
-      problem: {
-        name: selectedProblem.name,
-        difficulty: selectedProblem.difficulty,
-        topic: selectedProblem.topic,
-        source: selectedProblem.source,
-        problemLink: selectedProblem.problemLink,
-        tags: selectedProblem.tags || [],
-      },
-    });
+      const res = await axiosInstance.post("/challenges", {
+        challengeeId: selectedUser,
+        problem: {
+          name: selectedProblem.name,
+          difficulty: selectedProblem.difficulty,
+          topic: selectedProblem.topic,
+          source: selectedProblem.source,
+          problemLink: selectedProblem.problemLink,
+          tags: selectedProblem.tags || [],
+        },
+      });
 
-    if (res.data?.success) {
-      toast.success("Challenge sent successfully 🚀");
+      if (res.data?.success) {
+        toast.success("Challenge sent successfully 🚀");
 
-      setChallengeModalOpen(false);
-      setSelectedUser(null);
-      setSelectedProblem(null);
+        setChallengeModalOpen(false);
+        setSelectedUser(null);
+        setSelectedProblem(null);
+      }
+    } catch (err) {
+      toast.error("Failed to send challenge");
+      console.error("Failed to send challenge", err.response?.data || err);
+    } finally {
+      setSending(false);
     }
-  } catch (err) {
-    toast.error("Failed to send challenge");
-    console.error("Failed to send challenge", err.response?.data || err);
-  } finally {
-    setSending(false);
-  }
-};
-
+  };
 
   const getDifficultyStyle = (d) => {
     if (d === "Easy")
@@ -128,7 +136,7 @@ const MyProblems = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My DSA Problems</h1>
         <button
-        id="addProblemBtn"
+          id="addProblemBtn"
           onClick={() => navigate("/problems/add")}
           className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500"
         >
@@ -150,7 +158,7 @@ const MyProblems = () => {
           </div>
 
           <button
-          id="filterBtn"
+            id="filterBtn"
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg"
           >
@@ -181,7 +189,7 @@ const MyProblems = () => {
               <option value="all">All Topics</option>
               {[...new Set(problems.map((p) => p.topic))].map((topic, idx) => (
                 <option key={`topic-${idx}`} value={topic}>
-                  {topic}
+                  {capitalizeWords(topic)}
                 </option>
               ))}
             </select>
@@ -218,8 +226,8 @@ const MyProblems = () => {
                       {p.difficulty}
                     </span>
                   </td>
-                  <td className="p-3 font-semibold">{p.name}</td>
-                  <td className="p-3">{p.topic}</td>
+                  <td className="p-3 font-semibold">{capitalizeWords(p.name)}</td>
+                  <td className="p-3">{capitalizeWords(p.topic)}</td>
                   <td className="p-3 text-slate-300">{p.source || "-"}</td>
                   <td className="p-3">
                     <div className="flex gap-2 flex-wrap">
@@ -228,7 +236,7 @@ const MyProblems = () => {
                           key={`${p._id}-tag-${idx}`}
                           className="px-2 py-0.5 text-xs rounded bg-purple-500/20 text-purple-300 border border-purple-500/30"
                         >
-                          {t}
+                          {capitalizeWords(t)}
                         </span>
                       ))}
                       {(p.tags || []).length === 0 && (
@@ -248,7 +256,7 @@ const MyProblems = () => {
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button
-                      id="expandBtn"
+                        id="expandBtn"
                         onClick={() =>
                           setExpandedProblem(
                             expandedProblem === p._id ? null : p._id
@@ -276,7 +284,6 @@ const MyProblems = () => {
                         setSelectedProblem(p);
                         setSelectedUser(null);
 
-                        // fetch users if not already fetched
                         if (allUsers.length === 0) {
                           try {
                             const res = await axiosInstance.get("/users");
@@ -293,7 +300,6 @@ const MyProblems = () => {
                       Challenge
                     </button>
                   </td>
-
                 </tr>
 
                 {expandedProblem === p._id && (
@@ -338,7 +344,7 @@ const MyProblems = () => {
 
             <p className="text-sm text-slate-400 mb-3">
               Problem:{" "}
-              <span className="text-white">{selectedProblem?.name}</span>
+              <span className="text-white">{capitalizeWords(selectedProblem?.name)}</span>
             </p>
             <select
               value={selectedUser || ""}
