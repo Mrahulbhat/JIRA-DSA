@@ -21,6 +21,22 @@ export const createChallenge = async (req, res) => {
       return res.status(400).json({ success: false, message: "You cannot challenge yourself" });
     }
 
+    // ===== Duplicate check =====
+    const existingChallenge = await Challenge.findOne({
+      challengerId,
+      challengeeId,
+      "problem.name": problem.name,
+      status: { $in: ["pending", "completed"] }, // optional: consider only pending/completed
+    });
+
+    if (existingChallenge) {
+      return res.status(400).json({
+        success: false,
+        message: "This problem has already been challenged to this user",
+      });
+    }
+    // ===========================
+
     const challenge = await Challenge.create({
       challengerId,
       challengeeId,
@@ -46,6 +62,7 @@ export const createChallenge = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 /**
  * GET /challenges/pending-count - Count of pending received challenges (for sidebar badge)

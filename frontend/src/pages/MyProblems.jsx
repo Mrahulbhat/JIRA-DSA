@@ -86,7 +86,10 @@ const MyProblems = () => {
         setSelectedProblem(null);
       }
     } catch (err) {
-      toast.error("Failed to send challenge");
+      const message =
+        err.response?.data?.message || "Failed to send challenge";
+
+      toast.error(message);
       console.error("Failed to send challenge", err.response?.data || err);
     } finally {
       setSending(false);
