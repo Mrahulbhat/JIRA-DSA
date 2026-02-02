@@ -90,6 +90,19 @@ export const addProblem = async (req, res) => {
       });
     }
 
+    // ✅ SIMPLE DUPLICATE CHECK
+    const existing = await Problem.findOne({
+      userId,
+      name: name.toLowerCase().trim(),
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already added this problem",
+      });
+    }
+
     const problem = await Problem.create({
       userId,
       name,
@@ -103,16 +116,20 @@ export const addProblem = async (req, res) => {
       notes: notes || "",
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Problem added successfully",
       problem,
     });
   } catch (error) {
     console.error("Add problem error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
+
 
 /**
  * PATCH /problems/:id

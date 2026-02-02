@@ -148,7 +148,7 @@ const LoginPage = () => {
               data-testid="login-button"
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-green-600 rounded-lg flex justify-center"
+              className="w-full py-3 text-white font-semibold bg-green-600 rounded-lg flex justify-center"
             >
               {isLoading ? <Loader className="animate-spin" /> : <LogIn />}
               <span className="ml-2">
@@ -163,7 +163,7 @@ const LoginPage = () => {
             data-testid="google-login-button"
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full mt-6 py-3 bg-white text-black rounded-lg"
+            className="w-full mt-6 py-3 bg-gray-300 text-black rounded-lg"
           >
             Login with Google
           </button>
