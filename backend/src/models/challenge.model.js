@@ -14,7 +14,15 @@ const challengeSchema = new mongoose.Schema(
     },
     problem: {
       name: { type: String, required: true },
-      difficulty: { type: String, enum: ["Easy", "Medium", "Hard"], required: true },
+
+      // ✅ added to prevent duplicates across different entry points
+      normalizedName: { type: String, required: true, index: true },
+
+      difficulty: {
+        type: String,
+        enum: ["Easy", "Medium", "Hard"],
+        required: true,
+      },
       topic: { type: String, required: true },
       source: { type: String, required: true },
       problemLink: { type: String, required: true },
