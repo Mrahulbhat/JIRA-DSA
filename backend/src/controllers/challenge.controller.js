@@ -223,3 +223,38 @@ export const completeChallenge = async (req, res) => {
       .json({ success: false, message: error.message });
   }
 };
+export const deleteChallenge = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized: No user ID in token" });
+    }
+
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Challenge ID is required" });
+    }
+
+    const challenge = await Challenge.findById(id).lean();
+    if (!challenge) {
+      return res.status(404).json({ success: false, message: "Challenge not found" });
+    }
+
+    // Handle populated or raw ObjectId
+    const challengerIdStr =
+      typeof challenge.challengerId === "object" && challenge.challengerId?._id
+        ? challenge.challengerId._id.toString()
+        : challenge.challengerId?.toString();
+
+    if (challengerIdStr !== userId) {
+      return res.status(403).json({ success: false, message: "You are not allowed to delete this challenge" });
+    }
+
+    await Challenge.findByIdAndDelete(id);
+
+    return res.status(200).json({ success: true, message: "Challenge deleted successfully" });
+  } catch (error) {
+    console.error("deleteChallenge error:", error);
+    return res.status(500).json({ success: false, message: "Server error: " + error.message });
+  }
+};

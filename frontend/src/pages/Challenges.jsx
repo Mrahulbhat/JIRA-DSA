@@ -9,6 +9,8 @@ import {
   Clock,
   UserPlus,
   ExternalLink,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
@@ -32,6 +34,8 @@ const Challenges = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const dropdownRef = useRef(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [form, setForm] = useState({
     name: "",
     difficulty: "Medium",
@@ -81,6 +85,20 @@ const Challenges = () => {
       setAllUsers([]);
     } finally {
       setUsersLoading(false);
+    }
+  };
+
+  const handleDelete = async (challengeId) => {
+    setDeletingId(challengeId);
+    try {
+      await axiosInstance.delete(`/challenges/${challengeId}`);
+      toast.success("Challenge deleted");
+      fetchChallenges();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete challenge");
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
     }
   };
 
@@ -195,7 +213,7 @@ const Challenges = () => {
         {tab === "received" && (
           <div className="space-y-4">
             {pendingReceived.length === 0 ? (
-              <p className="text-gray-500 py-8">No pending challenges. Others can challenge you and they’ll appear here.</p>
+              <p className="text-gray-500 py-8">No pending challenges. Others can challenge you and they'll appear here.</p>
             ) : (
               pendingReceived.map((c) => (
                 <div
@@ -249,27 +267,108 @@ const Challenges = () => {
         )}
 
         {tab === "sent" && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {sent.length === 0 ? (
-              <p className="text-gray-500 py-8">You haven’t sent any challenges yet.</p>
+              <p className="text-gray-500 py-8">You haven't sent any challenges yet.</p>
             ) : (
-              sent.map((c) => (
-                <div
-                  key={c._id}
-                  className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex items-center justify-between"
-                >
+              <>
+                {/* Pending */}
+                {sent.filter((c) => c.status === "pending").length > 0 && (
                   <div>
-                    <p className="text-white font-medium">To @{c.challengeeId?.username || c.challengeeId?.name || "user"}</p>
-                    <p className="text-gray-400 text-sm">{c.problem?.name} · {c.problem?.difficulty}</p>
+                    <h3 className="text-gray-300 mb-3 text-sm uppercase tracking-wide">
+                      Pending
+                    </h3>
+                    <div className="space-y-3">
+                      {sent
+                        .filter((c) => c.status === "pending")
+                        .map((c) => (
+                          <div
+                            key={c._id}
+                            className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex items-center justify-between"
+                          >
+                            <div>
+                              <p className="text-white font-medium">
+                                To @{c.challengeeId?.username || c.challengeeId?.name || "user"}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {c.problem?.name} · {c.problem?.difficulty}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-amber-400 flex items-center gap-1">
+                                <Clock className="w-4 h-4" /> Pending
+                              </span>
+
+                              <button
+                                onClick={() => setConfirmDeleteId(c._id)}
+                                disabled={deletingId === c._id}
+                                className="text-red-400 hover:text-red-300 disabled:opacity-50"
+                                title="Delete challenge"
+                              >
+                                {deletingId === c._id ? (
+                                  <Loader className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
+                              </button>
+                            </div>
+
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                  <span className={c.status === "completed" ? "text-green-400 flex items-center gap-1" : "text-amber-400 flex items-center gap-1"}>
-                    {c.status === "completed" ? <><CheckCircle2 className="w-4 h-4" /> Done</> : <><Clock className="w-4 h-4" /> Pending</>}
-                  </span>
-                </div>
-              ))
+                )}
+
+                {/* Completed */}
+                {sent.filter((c) => c.status === "completed").length > 0 && (
+                  <div>
+                    <h3 className="text-gray-300 mb-3 text-sm uppercase tracking-wide">
+                      Completed
+                    </h3>
+                    <div className="space-y-3">
+                      {sent
+                        .filter((c) => c.status === "completed")
+                        .map((c) => (
+                          <div
+                            key={c._id}
+                            className="bg-gray-800/30 border border-gray-700 rounded-xl p-5 flex items-center justify-between"
+                          >
+                            <div>
+                              <p className="text-white font-medium">
+                                To @{c.challengeeId?.username || c.challengeeId?.name || "user"}
+                              </p>
+                              <p className="text-gray-400 text-sm line-through">
+                                {c.problem?.name} · {c.problem?.difficulty}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-green-400 flex items-center gap-1">
+                                <CheckCircle2 className="w-4 h-4" /> Completed
+                              </span>
+
+                              <button
+                                onClick={() => setConfirmDeleteId(c._id)}
+                                disabled={deletingId === c._id}
+                                className="text-red-400 hover:text-red-300 disabled:opacity-50"
+                                title="Delete challenge"
+                              >
+                                {deletingId === c._id ? (
+                                  <Loader className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
+
 
         {tab === "create" && (
           <form onSubmit={handleCreateChallenge} className="space-y-6 bg-gray-800/50 border border-gray-700 rounded-xl p-6">
@@ -392,6 +491,40 @@ const Challenges = () => {
           </form>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-400" />
+              <h2 className="text-xl font-semibold">Are you sure?</h2>
+            </div>
+
+            <p className="text-sm text-gray-400 mb-6">
+              This will permanently delete this challenge. This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={deletingId === confirmDeleteId}
+                onClick={() => handleDelete(confirmDeleteId)}
+                className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 disabled:opacity-50 flex items-center gap-2"
+              >
+                {deletingId === confirmDeleteId && <Loader className="w-4 h-4 animate-spin" />}
+                Yes, delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
