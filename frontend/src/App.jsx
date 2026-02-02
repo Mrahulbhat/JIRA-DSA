@@ -22,12 +22,14 @@ const UPDATE_CONFIG = {
   title: "What's New!",
   sectionTitle: "Bug Fixes & Improvements",
   features: [
-    "Challenge your friends you have solved from My Problems Section",
-    "Improved UI / UX Designs",
-    "Fixed Duplicate Problems and Challenges Bugs",
+    "Challenge your friends with problems you've solved from the My Problems section",
+    "Improved UI/UX designs",
+    "Fixed critical bugs related to duplicate problems and challenges",
+    "Added delete buttons to challenges and display all challenges"
   ],
   buttonText: "Got it, thanks! 🚀"
 };
+
 
 /* ---------- Update Modal Component ---------- */
 const UpdateModal = () => {
