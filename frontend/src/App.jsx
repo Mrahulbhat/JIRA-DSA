@@ -16,29 +16,39 @@ import Settings from "./pages/Settings";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
+/* ---------- Update Configuration ---------- */
+const UPDATE_CONFIG = {
+  version: "v2026.1.7",
+  title: "What's New!",
+  sectionTitle: "Bug Fixes & Improvements",
+  features: [
+    "Challenge your friends you have solved from My Problems Section",
+    "Improved UI / UX Designs",
+    "Fixed Duplicate Problems and Challenges Bugs",
+  ],
+  buttonText: "Got it, thanks! 🚀"
+};
+
 /* ---------- Update Modal Component ---------- */
 const UpdateModal = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
-  // Version identifier - change this when you have a new update
-  const CURRENT_VERSION = "v1.2.0";
   
   useEffect(() => {
     const lastSeenVersion = localStorage.getItem("lastSeenVersion");
     
     // Show modal if user hasn't seen this version
-    if (lastSeenVersion !== CURRENT_VERSION) {
+    if (lastSeenVersion !== UPDATE_CONFIG.version) {
       // Add a 1.5 second delay before showing the modal
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 1500); // 1500ms = 1.5 seconds
+      }, 1500);
       
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleClose = () => {
-    localStorage.setItem("lastSeenVersion", CURRENT_VERSION);
+    localStorage.setItem("lastSeenVersion", UPDATE_CONFIG.version);
     setIsVisible(false);
   };
 
@@ -59,7 +69,7 @@ const UpdateModal = () => {
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2">
               <Sparkles className="size-6 text-yellow-400" />
-              <h3 className="text-white font-bold text-2xl">What's New!</h3>
+              <h3 className="text-white font-bold text-2xl">{UPDATE_CONFIG.title}</h3>
             </div>
             <button
               onClick={handleClose}
@@ -71,36 +81,22 @@ const UpdateModal = () => {
           
           {/* Version Badge */}
           <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4">
-            {CURRENT_VERSION}
+            {UPDATE_CONFIG.version}
           </div>
           
           {/* Content */}
           <div className="text-gray-300 space-y-4">
             <div>
               <p className="font-semibold text-white mb-3 flex items-center gap-2">
-                <span className="text-green-400">✓</span> Bug Fixes & Improvements
+                <span className="text-green-400">✓</span> {UPDATE_CONFIG.sectionTitle}
               </p>
               <ul className="space-y-2.5 ml-6">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">•</span>
-                  <span>Fixed authentication redirect issue</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">•</span>
-                  <span>Improved sidebar navigation performance</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">•</span>
-                  <span>Resolved problem submission errors</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">•</span>
-                  <span>Enhanced leaderboard loading speed</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">•</span>
-                  <span>Fixed dark mode display issues</span>
-                </li>
+                {UPDATE_CONFIG.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -110,13 +106,14 @@ const UpdateModal = () => {
             onClick={handleClose}
             className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
           >
-            Got it, thanks! 🚀
+            {UPDATE_CONFIG.buttonText}
           </button>
         </div>
       </div>
     </div>
   );
 };
+
 /* ---------- Protected Route ---------- */
 const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useAuth();
