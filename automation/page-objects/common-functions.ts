@@ -1,5 +1,8 @@
 import { expect } from '@playwright/test';
 import commonConstants from '../constants/commonConstants.js';
+import { APIRequestContext } from '@playwright/test';
+import { loginAndGetToken } from '../utils/authApi.js';
+import { addProblem } from '../utils/problemApi.js';
 
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
@@ -42,4 +45,35 @@ export async function generateRandomPrefix(length: number = 5): Promise<string> 
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
+}
+
+export async function loginUsingApi(
+    request: APIRequestContext
+): Promise<string> {
+    const token = await loginAndGetToken(request);
+    if (!token) {
+        throw new Error("API Login failed: Token not received");
+    }
+    return token;
+}
+
+export async function addProblemViaApi(
+    request: APIRequestContext
+) {
+    const token = await loginAndGetToken(request);
+    const randomPrefix = generateRandomPrefix(3);
+
+    return addProblem(
+        request,
+        {
+            name: `${randomPrefix}_TEST_NAME`,
+            difficulty: "Easy",
+            topic: "Array",
+            source: "Test_Source",
+            problemLink: "https://testlink.com",
+            tags: ["tag1", "tag2"],
+            language: "TEST_LANGUAGE",
+        },
+        token
+    );
 }

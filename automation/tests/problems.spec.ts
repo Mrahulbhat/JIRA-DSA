@@ -2,13 +2,9 @@ import { test } from '../fixtures/test-base.ts';
 import { expect } from '@playwright/test';
 import commonConstants from '../constants/commonConstants.ts';
 import { waitForApiResponse } from '../page-objects/common-functions.ts';
-import { addProblem } from "../utils/problemApi";
-import { loginAndGetToken } from "../utils/authApi";
-import { generateRandomPrefix } from '../page-objects/common-functions.ts';
-
 
 test.describe('My Problems Page related Tests', () => {
-    test.beforeEach(async ({ page, loginPage }) => {
+    test.beforeEach(async ({ page }) => {
         //login via api
         await expect(page.getByText('DSA Arena')).toBeVisible();
     });
@@ -39,24 +35,4 @@ test.describe('My Problems Page related Tests', () => {
         console.log(finalCount);
         expect(finalCount === problemCount+commonConstants.problemsToAdd.length);
     });
-
-
-    test.only("Add problems via API", async ({ request }) => {
-        const token = await loginAndGetToken(request);
-        const randomPrefix = generateRandomPrefix(3);
-
-        await addProblem(
-            request,
-            {
-                name: randomPrefix+"TEST_NAME",
-                difficulty: "Easy",
-                topic: "Array",
-                source: "Test_Source",
-                problemLink: "https://testlink.com",
-                tags: ["tag1","tag2"],
-                language: "TEST_LANGUAGE",
-            },
-            token
-        );
-    });
-})
+});
