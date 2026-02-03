@@ -13,11 +13,7 @@ export class BasePage {
      get backButton(): Locator {
         return this.page.locator('#backBtn');
     }
-
-    get closeModalPopupBtn():Locator{
-        return this.page.locator('#closePopupBtn');
-    }
-
+    
     // Sidebar Buttons
     get dashboardSidebarBtn(): Locator {
         return this.page.locator('#dashboard');

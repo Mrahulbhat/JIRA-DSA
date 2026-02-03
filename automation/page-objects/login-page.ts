@@ -36,8 +36,6 @@ export class LoginPage extends BasePage {
         await this.passwordInputField.fill(commonConstants.password);
         await this.loginButton.click();
         await waitForApiResponse(this.page, '/pending-count');
-        await expect(this.closeModalPopupBtn).toBeVisible();
-        await this.closeModalPopupBtn.click();
         await expect(this.navbarPage.logoutBtn).toBeVisible();
     }
 
