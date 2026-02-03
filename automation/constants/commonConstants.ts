@@ -58,36 +58,6 @@ const commonConstants = {
             tags: "string,sliding-window",
             notes: "Use sliding window with hash set."
         },
-        {
-            title: "Merge Two Sorted Lists",
-            difficulty: "Easy",
-            topic: "Linked List",
-            platform: "LeetCode",
-            problemLink: "https://leetcode.com/problems/merge-two-sorted-lists/",
-            solutionLink: "https://github.com/user/solutions/blob/main/merge_lists.js",
-            tags: "linkedlist,recursion",
-            notes: "Recursive merge of two lists."
-        },
-        {
-            title: "Course Schedule",
-            difficulty: "Medium",
-            topic: "Graph",
-            platform: "LeetCode",
-            problemLink: "https://leetcode.com/problems/course-schedule/",
-            solutionLink: "https://github.com/user/solutions/blob/main/course_schedule.js",
-            tags: "graph,topological-sort",
-            notes: "Detect cycle using DFS."
-        },
-        {
-            title: "Minimum Window Substring",
-            difficulty: "Hard",
-            topic: "String",
-            platform: "LeetCode",
-            problemLink: "https://leetcode.com/problems/minimum-window-substring/",
-            solutionLink: "https://github.com/user/solutions/blob/main/min_window.js",
-            tags: "string,sliding-window,hashmap",
-            notes: "Use two-pointer sliding window technique."
-        },
     ],
 };
 

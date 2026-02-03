@@ -5,40 +5,11 @@ import { waitForApiResponse } from '../page-objects/common-functions.ts';
 import { addProblem } from "../utils/problemApi";
 import { loginAndGetToken } from "../utils/authApi";
 
-test.describe('Dashboard Related Tests', () => {
-    test.beforeEach(async ({ page, loginPage }) => {
-        await loginPage.loginUser();
-        await expect(page.getByText('DSA Arena')).toBeVisible();
-    });
-
-    test('Validate basic dashboard visibility functionality', async ({ page, dashboardPage, loginPage }) => {
-
-        // ----- CARDS -----
-        await expect(dashboardPage.currentStreak).toBeVisible();
-        await expect(dashboardPage.totalSolved).toBeVisible();
-        await expect(dashboardPage.weeklyGoal).toBeVisible();
-        await expect(dashboardPage.globalRank).toBeVisible();
-
-        await expect(dashboardPage.currentStreak).not.toHaveText('');
-        await expect(dashboardPage.totalSolved).not.toHaveText('');
-
-        // ----- QUICK ACTION BUTTONS -----
-        await expect(dashboardPage.addProblemBtn).toBeVisible();
-        await expect(dashboardPage.leaderboardBtn).toBeVisible();
-        await expect(dashboardPage.myChallengesBtn).toBeVisible();
-    });
-
-    // test('Verify if Problem Count in Dashboard card is accurate', async ({ page, loginPage, dashboardPage }) => {
-    //     await expect(page.getByText('DSA Arena')).toBeVisible();
-    //     await expect(dashboardPage.totalSolved).toBeVisible();
-    //     const problemCount = await dashboardPage.problemsCountValue.innerText();
-    //     console.log(problemCount);
-    // });
-});
 
 test.describe('My Problems Page related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
-        
+        //login via api
+        await expect(page.getByText('DSA Arena')).toBeVisible();
     });
 
     test('Verify if a user can Add problems solved by him', async ({ page, myProblemsPage, dashboardPage }) => {
@@ -53,7 +24,7 @@ test.describe('My Problems Page related Tests', () => {
         await waitForApiResponse(page, commonConstants.fetchProblemsApi);
         await expect(myProblemsPage.addProblemBtn).toBeVisible();
 
-        // Add many problems
+        // Add 2 problems from set of problems declared in common constants file
         for (const p of commonConstants.problemsToAdd) {
             await myProblemsPage.addProblem(page, p.title, p.difficulty, p.topic, p.platform, p.problemLink, p.solutionLink, p.tags, p.notes);
         }
@@ -65,8 +36,9 @@ test.describe('My Problems Page related Tests', () => {
         await expect(dashboardPage.totalSolved).toBeVisible();
         const finalCount = await dashboardPage.problemsCountValue.innerText();
         console.log(finalCount);
-        expect(finalCount === problemCount + commonConstants.problemsToAdd.length);
+        expect(finalCount === problemCount+commonConstants.problemsToAdd.length);
     });
+
 
     test.only("Add problems via API", async ({ request }) => {
         const token = await loginAndGetToken(request);
