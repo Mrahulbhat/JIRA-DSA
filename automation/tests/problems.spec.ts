@@ -4,6 +4,7 @@ import commonConstants from '../constants/commonConstants.ts';
 import { waitForApiResponse } from '../page-objects/common-functions.ts';
 import { addProblem } from "../utils/problemApi";
 import { loginAndGetToken } from "../utils/authApi";
+import { generateRandomPrefix } from '../page-objects/common-functions.ts';
 
 
 test.describe('My Problems Page related Tests', () => {
@@ -42,17 +43,18 @@ test.describe('My Problems Page related Tests', () => {
 
     test.only("Add problems via API", async ({ request }) => {
         const token = await loginAndGetToken(request);
+        const randomPrefix = generateRandomPrefix(3);
 
         await addProblem(
             request,
             {
-                name: "array problem 2",
+                name: randomPrefix+"TEST_NAME",
                 difficulty: "Easy",
                 topic: "Array",
-                source: "LeetCode",
-                problemLink: "https://leetcode.com/problems/auto-1",
-                tags: ["array"],
-                language: "Java",
+                source: "Test_Source",
+                problemLink: "https://testlink.com",
+                tags: ["tag1","tag2"],
+                language: "TEST_LANGUAGE",
             },
             token
         );
