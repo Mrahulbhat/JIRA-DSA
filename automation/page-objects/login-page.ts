@@ -37,7 +37,6 @@ export class LoginPage extends BasePage {
         await this.loginButton.click();
         await waitForApiResponse(this.page, '/pending-count');
         await expect(this.navbarPage.logoutBtn).toBeVisible();
-        // await expect(this.
     }
 
 

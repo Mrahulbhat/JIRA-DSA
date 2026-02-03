@@ -13,109 +13,7 @@ import MyProblems from "./pages/MyProblems";
 import Leaderboard from "./pages/Leaderboard";
 import Challenges from "./pages/Challenges";
 import Settings from "./pages/Settings";
-
 import { AuthProvider, useAuth } from "./context/AuthContext";
-
-/* ---------- Update Configuration ---------- */
-const UPDATE_CONFIG = {
-  version: "v2026.1.7",
-  title: "What's New!",
-  sectionTitle: "Bug Fixes & Improvements",
-  features: [
-    "Challenge your friends with problems you've solved from the My Problems section",
-    "Improved UI/UX designs",
-    "Fixed critical bugs related to duplicate problems and challenges",
-    "Added delete buttons to challenges and display all challenges"
-  ],
-  buttonText: "Got it, thanks! 🚀"
-};
-
-
-/* ---------- Update Modal Component ---------- */
-const UpdateModal = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const lastSeenVersion = localStorage.getItem("lastSeenVersion");
-
-    // Show modal if user hasn't seen this version
-    if (lastSeenVersion !== UPDATE_CONFIG.version) {
-      // Add a 1.5 second delay before showing the modal
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleClose = () => {
-    localStorage.setItem("lastSeenVersion", UPDATE_CONFIG.version);
-    setIsVisible(false);
-  };
-
-  if (!isVisible) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
-      {/* Backdrop with blur */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={handleClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-1 max-w-md w-full mx-4 animate-scale-in">
-        <div className="bg-gray-900 rounded-xl p-6">
-          {/* Header */}
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="size-6 text-yellow-400" />
-              <h3 className="text-white font-bold text-2xl">{UPDATE_CONFIG.title}</h3>
-            </div>
-            <button
-              id="closePopupBtn"
-              onClick={handleClose}
-              className="text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg p-1.5 transition"
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-
-          {/* Version Badge */}
-          <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4">
-            {UPDATE_CONFIG.version}
-          </div>
-
-          {/* Content */}
-          <div className="text-gray-300 space-y-4">
-            <div>
-              <p className="font-semibold text-white mb-3 flex items-center gap-2">
-                <span className="text-green-400">✓</span> {UPDATE_CONFIG.sectionTitle}
-              </p>
-              <ul className="space-y-2.5 ml-6">
-                {UPDATE_CONFIG.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">•</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <button
-            onClick={handleClose}
-            className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
-          >
-            {UPDATE_CONFIG.buttonText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 /* ---------- Protected Route ---------- */
 const ProtectedRoute = ({ children }) => {
@@ -160,15 +58,9 @@ const AppContent = () => {
     location.pathname !== "/login" &&
     location.pathname !== "/signup";
 
-  // Show modal only when user is logged in and not on auth pages
-  const showUpdateModal = user && showSidebar;
-
   return (
     <div className="h-screen flex flex-col">
       <Navbar />
-
-      {/* Update Modal */}
-      {showUpdateModal && <UpdateModal />}
 
       <div className="flex h-[90vh] bg-black">
         {showSidebar && <Sidebar />}
