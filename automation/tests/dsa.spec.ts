@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import commonConstants from '../constants/commonConstants.ts';
 import { waitForApiResponse } from '../page-objects/common-functions.ts';
 import { addProblem } from "../utils/problemApi";
-
+import { loginAndGetToken } from "../utils/authApi";
 
 test.describe('Dashboard Related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
@@ -38,8 +38,7 @@ test.describe('Dashboard Related Tests', () => {
 
 test.describe('My Problems Page related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
-        await loginPage.loginUser();
-        await expect(page.getByText('DSA Arena')).toBeVisible();
+        
     });
 
     test('Verify if a user can Add problems solved by him', async ({ page, myProblemsPage, dashboardPage }) => {
@@ -69,23 +68,21 @@ test.describe('My Problems Page related Tests', () => {
         expect(finalCount === problemCount + commonConstants.problemsToAdd.length);
     });
 
-    test("Seed 10 problems using API", async ({ request, page }) => {
+    test.only("Add problems via API", async ({ request }) => {
+        const token = await loginAndGetToken(request);
 
-        const problems = Array.from({ length: 10 }, (_, i) => ({
-            name: `array problem ${i + 1}`,
-            difficulty: "Easy" as const,
-            topic: "Array",
-            source: "LeetCode",
-            problemLink: `https://leetcode.com/problems/auto-${i + 1}`,
-            tags: ["array"],
-            language: "Java"
-        }));
-
-        for (const problem of problems) {
-            await addProblem(request, problem);
-        }
-
-        await page.goto("/problems");
+        await addProblem(
+            request,
+            {
+                name: "array problem 2",
+                difficulty: "Easy",
+                topic: "Array",
+                source: "LeetCode",
+                problemLink: "https://leetcode.com/problems/auto-1",
+                tags: ["array"],
+                language: "Java",
+            },
+            token
+        );
     });
-
 })

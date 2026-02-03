@@ -7,10 +7,11 @@ export default defineConfig({
   timeout: 2 * 60 * 1000,
 
   // maximum time for the whole test run (optional)
-  
+
   globalTimeout: 2 * 60 * 1000, // 2 minutes
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // retries: process.env.CI ? 2 : 0,
+  retries:0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
 
@@ -19,7 +20,8 @@ export default defineConfig({
   expect: { timeout: 60 * 1000 }, // expect() timeout
 
   use: {
-    trace: 'on',
+    baseURL: 'https://dsa-tracker-elmd.onrender.com',
+    trace: 'off',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 60 * 1000, // 1 minutes

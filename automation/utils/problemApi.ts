@@ -1,9 +1,29 @@
 import { APIRequestContext } from "@playwright/test";
-
-type ProblemPayload = {
+export type ProblemPayload = {
   name: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  topic: string;
+  topic:
+    | "Sorting"
+    | "Searching"
+    | "Basic Math"
+    | "Array"
+    | "String"
+    | "Bit Manipulation"
+    | "Recursion"
+    | "Hashing"
+    | "Linked List"
+    | "Stack"
+    | "Queue"
+    | "Tree"
+    | "Graph"
+    | "Dynamic Programming"
+    | "Greedy"
+    | "Backtracking"
+    | "Two Pointers"
+    | "Sliding Window"
+    | "Heap"
+    | "Trie"
+    | "Others";
   source: string;
   problemLink: string;
   githubLink?: string;
@@ -14,15 +34,31 @@ type ProblemPayload = {
 
 export async function addProblem(
   request: APIRequestContext,
-  payload: ProblemPayload
+  payload: ProblemPayload,
+  token: string
 ) {
   const response = await request.post("/api/problems/add", {
-    data: payload
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: payload,
   });
 
   if (!response.ok()) {
-    throw new Error(await response.text());
+    const status = response.status();
+    const statusText = response.statusText();
+    const body = await response.text();
+
+    console.error("API ERROR 👉", {
+      status,
+      statusText,
+      body,
+      payload,
+    });
+
+    throw new Error(`API failed with ${status} ${statusText}`);
   }
 
   return response.json();
 }
+
