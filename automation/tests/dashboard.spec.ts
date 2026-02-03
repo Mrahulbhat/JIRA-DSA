@@ -5,7 +5,7 @@ import { generateRandomPrefix, waitForApiResponse } from '../page-objects/common
 
 test.describe('Dashboard Related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
-        //login via api
+        await loginPage.loginUser();
     });
 
     test('Validate basic dashboard visibility functionality', async ({ page, dashboardPage, loginPage }) => {

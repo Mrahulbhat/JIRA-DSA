@@ -4,8 +4,9 @@ import commonConstants from '../constants/commonConstants.ts';
 import { waitForApiResponse } from '../page-objects/common-functions.ts';
 
 test.describe('My Problems Page related Tests', () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page,loginPage}) => {
         //login via api
+        await loginPage.loginUser();
         await expect(page.getByText('DSA Arena')).toBeVisible();
     });
 

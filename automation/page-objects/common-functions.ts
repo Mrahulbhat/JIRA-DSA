@@ -3,6 +3,8 @@ import commonConstants from '../constants/commonConstants.js';
 import { APIRequestContext } from '@playwright/test';
 import { loginAndGetToken } from '../utils/authApi.js';
 import { addProblem } from '../utils/problemApi.js';
+import { APIResponse } from '@playwright/test';
+
 
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
@@ -28,14 +30,20 @@ export async function navigateToPage(page: any, pageName: string) {
     }
 }
 
+
 export async function waitForApiResponse(page: any, url: string) {
     try {
-        await page.waitForResponse((response: any) => response.url().includes(url) && response.status() === 200 || 304, { timeout: 15000 });
-    }
-    catch {
+        await page.waitForResponse(
+            (response: APIResponse) =>
+                response.url().includes(url) &&
+                (response.status() === 200 || response.status() === 304),
+            { timeout: 15000 }
+        );
+    } catch {
         console.log('Intercept might have arrived before');
     }
 }
+
 
 export async function generateRandomPrefix(length: number = 5): Promise<string> {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
@@ -76,4 +84,22 @@ export async function addProblemViaApi(
         },
         token
     );
+}
+
+export async function deleteUserViaApi(
+    request: APIRequestContext,
+    token: string
+) {
+    const response = await request.delete('/api/users/me', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok()) {
+        const body = await response.text();
+        throw new Error(`Delete user failed → ${response.status()} ${body}`);
+    }
+
+    return response.json();
 }
