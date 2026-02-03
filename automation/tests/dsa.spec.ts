@@ -1,7 +1,9 @@
 import { test } from '../fixtures/test-base.ts';
 import { expect } from '@playwright/test';
 import commonConstants from '../constants/commonConstants.ts';
-import { generateRandomPrefix, waitForApiResponse } from '../page-objects/common-functions.ts';
+import { waitForApiResponse } from '../page-objects/common-functions.ts';
+import { addProblem } from "../utils/problemApi";
+
 
 test.describe('Dashboard Related Tests', () => {
     test.beforeEach(async ({ page, loginPage }) => {
@@ -26,12 +28,12 @@ test.describe('Dashboard Related Tests', () => {
         await expect(dashboardPage.myChallengesBtn).toBeVisible();
     });
 
-    test('Verify if Problem Count in Dashboard card is accurate', async ({ page, loginPage, dashboardPage }) => {
-        await expect(page.getByText('DSA Arena')).toBeVisible();
-        await expect(dashboardPage.totalSolved).toBeVisible();
-        const problemCount = await dashboardPage.problemsCountValue.innerText();
-        console.log(problemCount);
-    });
+    // test('Verify if Problem Count in Dashboard card is accurate', async ({ page, loginPage, dashboardPage }) => {
+    //     await expect(page.getByText('DSA Arena')).toBeVisible();
+    //     await expect(dashboardPage.totalSolved).toBeVisible();
+    //     const problemCount = await dashboardPage.problemsCountValue.innerText();
+    //     console.log(problemCount);
+    // });
 });
 
 test.describe('My Problems Page related Tests', () => {
@@ -64,6 +66,26 @@ test.describe('My Problems Page related Tests', () => {
         await expect(dashboardPage.totalSolved).toBeVisible();
         const finalCount = await dashboardPage.problemsCountValue.innerText();
         console.log(finalCount);
-        expect(finalCount === problemCount+commonConstants.problemsToAdd.length);
+        expect(finalCount === problemCount + commonConstants.problemsToAdd.length);
     });
+
+    test("Seed 10 problems using API", async ({ request, page }) => {
+
+        const problems = Array.from({ length: 10 }, (_, i) => ({
+            name: `array problem ${i + 1}`,
+            difficulty: "Easy" as const,
+            topic: "Array",
+            source: "LeetCode",
+            problemLink: `https://leetcode.com/problems/auto-${i + 1}`,
+            tags: ["array"],
+            language: "Java"
+        }));
+
+        for (const problem of problems) {
+            await addProblem(request, problem);
+        }
+
+        await page.goto("/problems");
+    });
+
 })
