@@ -1,5 +1,5 @@
-import { test } from '../fixtures/test-base.ts';
-import commonConstants from '../constants/commonConstants.ts';
+import { test } from '../../fixtures/test-base.ts';
+import commonConstants from '../../constants/commonConstants.ts';
 
 test.describe.serial('Authentication Tests', () => {
 

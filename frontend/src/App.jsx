@@ -34,17 +34,17 @@ const UPDATE_CONFIG = {
 /* ---------- Update Modal Component ---------- */
 const UpdateModal = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   useEffect(() => {
     const lastSeenVersion = localStorage.getItem("lastSeenVersion");
-    
+
     // Show modal if user hasn't seen this version
     if (lastSeenVersion !== UPDATE_CONFIG.version) {
       // Add a 1.5 second delay before showing the modal
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 1500);
-      
+
       return () => clearTimeout(timer);
     }
   }, []);
@@ -59,11 +59,11 @@ const UpdateModal = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
       {/* Backdrop with blur */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-1 max-w-md w-full mx-4 animate-scale-in">
         <div className="bg-gray-900 rounded-xl p-6">
@@ -74,18 +74,19 @@ const UpdateModal = () => {
               <h3 className="text-white font-bold text-2xl">{UPDATE_CONFIG.title}</h3>
             </div>
             <button
+              id="closePopupBtn"
               onClick={handleClose}
               className="text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg p-1.5 transition"
             >
               <X className="size-5" />
             </button>
           </div>
-          
+
           {/* Version Badge */}
           <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4">
             {UPDATE_CONFIG.version}
           </div>
-          
+
           {/* Content */}
           <div className="text-gray-300 space-y-4">
             <div>
@@ -102,7 +103,7 @@ const UpdateModal = () => {
               </ul>
             </div>
           </div>
-          
+
           {/* Footer */}
           <button
             onClick={handleClose}

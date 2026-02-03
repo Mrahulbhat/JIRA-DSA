@@ -1,7 +1,7 @@
-import { test } from '../fixtures/test-base.ts';
+import { test } from '../../fixtures/test-base.ts';
 import { expect } from '@playwright/test';
-import commonConstants from '../constants/commonConstants.ts';
-import { waitForApiResponse } from '../page-objects/common-functions.ts';
+import commonConstants from '../../constants/commonConstants.ts';
+import { waitForApiResponse } from '../../page-objects/common-functions.ts';
 
 test.describe.skip('Authentication Tests', () => {
     test('Delete a account @BAT', async ({ page, loginPage }) => {
